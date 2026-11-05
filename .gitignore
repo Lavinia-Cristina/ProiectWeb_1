@@ -1,0 +1,11 @@
+# Claude Code agentic setup
+.claude/*
+!.claude/skills/
+!.claude/agents/
+.claude/worktrees/
+
+# Antigravity agentic setup
+.agents/*
+!.agents/skills/
+!.agents/agents/
+.agents/worktrees/
