@@ -190,7 +190,16 @@ function seedDatabase(dbPath) {
     { id: 'cafea_filtru', name: 'Cafea la Filtru', category: 'Vin & Cafea', price: 7.00, weight: '100ml', allergens: [], ing: 'bauturi_generice' },
     { id: 'cappuccino', name: 'Capucino (Plic)', category: 'Vin & Cafea', price: 6.00, weight: '150ml', allergens: [7], ing: 'bauturi_generice' },
     { id: 'ceai', name: 'Ceai cald', category: 'Vin & Cafea', price: 6.00, weight: '150ml', allergens: [], ing: 'bauturi_generice' },
-    { id: 'latte_macchiato', name: 'Latte Machiatto', category: 'Vin & Cafea', price: 12.00, weight: '150ml', allergens: [7], ing: 'bauturi_generice' }
+    { id: 'latte_macchiato', name: 'Latte Machiatto', category: 'Vin & Cafea', price: 12.00, weight: '150ml', allergens: [7], ing: 'bauturi_generice' },
+
+    // Secțiunea DIVERSE & EXTRA (preparate din meniu ce pot fi comandate și de sine stătător: ardei, smântână, pâine etc.)
+    { id: 'diverse_smantana', name: 'Smântână', category: 'Diverse & Extra', price: 4.00, weight: '100g', allergens: [7], ing: 'smantana' },
+    { id: 'diverse_ardei_murati', name: 'Ardei murați', category: 'Diverse & Extra', price: 3.00, weight: '2 buc.', allergens: [], ing: 'ardei_iute' },
+    { id: 'diverse_ardei_verzi', name: 'Ardei verzi', category: 'Diverse & Extra', price: 3.00, weight: '2 buc.', allergens: [], ing: 'ardei_iute' },
+    { id: 'diverse_mujdei', name: 'Mujdei cu usturoi', category: 'Diverse & Extra', price: 2.00, weight: '20g', allergens: [], ing: 'usturoi_otet' },
+    { id: 'diverse_paine', name: 'Pâine', category: 'Diverse & Extra', price: 0.40, weight: '1 felie', allergens: [1], ing: 'paine' },
+    { id: 'diverse_ceapa_rosie', name: 'Ceapă roșie', category: 'Diverse & Extra', price: 3.00, weight: '50g', allergens: [], ing: 'mix_legume' },
+    { id: 'diverse_branza', name: 'Brânză suplimentară', category: 'Diverse & Extra', price: 5.00, weight: '50g', allergens: [7], ing: 'branza' }
   ];
 
   // Inserare rețete
@@ -227,7 +236,6 @@ function seedDatabase(dbPath) {
 
   const extras = [
     { id: 'extra_smantana', name: 'Smântână (100g)', ingredient_id: 'smantana', quantity: 1, price: 4.00 },
-    { id: 'extra_ardei', name: 'Ardei (1 buc.)', ingredient_id: 'ardei_iute', quantity: 1, price: 1.00 },
     { id: 'extra_paine', name: 'Pâine (1 felie)', ingredient_id: 'paine', quantity: 1, price: 0.40 },
     { id: 'extra_mujdei', name: 'Mujdei cu usturoi (20g)', ingredient_id: 'usturoi_otet', quantity: 1, price: 2.00 },
     { id: 'extra_ceapa_rosie', name: 'Ceapă roșie (50g)', ingredient_id: 'mix_legume', quantity: 1, price: 3.00 },

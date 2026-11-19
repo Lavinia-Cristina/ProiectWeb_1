@@ -182,9 +182,23 @@
 
     <header class="status-header">
       <div class="header-top">
-        <div class="table-indicator">
+        <div class="table-indicator" style="display:flex; align-items:center; gap:6px;">
           <span>📍</span>
-          <span id="header-table-badge">Masa 1</span>
+          <label for="status-table-picker" style="font-size:12px; font-weight:700; color:var(--color-primary);">Masa:</label>
+          <select id="status-table-picker" onchange="onStatusTableChange(this.value)" style="padding:3px 8px; border-radius:var(--radius-sm); border:1px solid var(--color-border); background:var(--color-surface); font-weight:700; font-size:13px; color:var(--color-primary); cursor:pointer;">
+            <option value="1">Masa 1</option>
+            <option value="2">Masa 2</option>
+            <option value="3">Masa 3</option>
+            <option value="4">Masa 4</option>
+            <option value="5">Masa 5</option>
+            <option value="6">Masa 6</option>
+            <option value="7">Masa 7</option>
+            <option value="8">Masa 8</option>
+            <option value="9">Masa 9</option>
+            <option value="10">Masa 10</option>
+            <option value="11">Masa 11</option>
+            <option value="12">Masa 12</option>
+          </select>
         </div>
         <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută tema">
           <span id="theme-toggle-label">🌙 Temă</span>
@@ -269,9 +283,23 @@
   <script src="/js/app.js"></script>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const tableNumber = parseInt(urlParams.get('masa') || '1', 10);
-    document.getElementById('header-table-badge').textContent = `Masa ${tableNumber}`;
+    let tableNumber = parseInt(urlParams.get('masa') || localStorage.getItem('kt_selected_table') || '1', 10);
+    if (isNaN(tableNumber) || tableNumber < 1 || tableNumber > 12) tableNumber = 1;
+
+    const statusPicker = document.getElementById('status-table-picker');
+    if (statusPicker) statusPicker.value = tableNumber;
     document.getElementById('back-to-menu-link').href = `/client-menu.html?masa=${tableNumber}`;
+
+    function onStatusTableChange(val) {
+      tableNumber = parseInt(val, 10);
+      localStorage.setItem('kt_selected_table', tableNumber);
+      const url = new URL(window.location);
+      url.searchParams.set('masa', tableNumber);
+      window.history.replaceState({}, '', url);
+      document.getElementById('back-to-menu-link').href = `/client-menu.html?masa=${tableNumber}`;
+      loadOrderStatus();
+      showToast(`Afișare comenzi pentru Masa ${tableNumber}`, 'info');
+    }
 
     async function loadOrderStatus() {
       try {

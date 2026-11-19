@@ -219,13 +219,16 @@
         <div class="form-group" style="flex-direction: row; gap: var(--space-md); align-items: center;">
           <div style="flex: 1;">
             <label class="form-label" for="qty-input">Cantitate (porții):</label>
-            <input type="number" id="qty-input" class="form-input" value="1" min="1" max="10">
+            <input type="number" id="qty-input" class="form-input" value="1" min="1" max="50" oninput="if(this.value < 1 && this.value !== '') this.value = 1;">
           </div>
           <div style="flex: 1;">
             <label class="form-label">Preț & Gramaj autoritar:</label>
             <div id="dish-price-display" style="font-size: 18px; font-weight: 700; color: var(--color-primary); margin-top: 6px;">0,00 lei</div>
             <div id="dish-weight-display" style="font-size: 12px; color: var(--color-text-muted); margin-top: 2px;"></div>
-            <div id="dish-allergens-display" style="font-size: 11px; color: #8c3a1e; margin-top: 2px;"></div>
+            <div style="display:flex; align-items:center; gap:6px; margin-top:4px; flex-wrap:wrap;">
+              <div id="dish-allergens-display" style="font-size: 11px; color: #8c3a1e;"></div>
+              <button type="button" id="btn-show-allergens" class="btn btn-secondary" style="padding:2px 8px; font-size:11px; display:none;" onclick="openWaiterAllergensModal()">ℹ️ Detalii Alergeni</button>
+            </div>
           </div>
         </div>
 
@@ -286,17 +289,47 @@
 
   </div>
 
+  <!-- Modal Detalii Alergeni pentru Ospătar -->
+  <div class="modal-overlay" id="waiter-allergens-modal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--color-border); padding-bottom:var(--space-xs);">
+        <h3 id="waiter-modal-title" style="margin:0; font-family:var(--font-heading); font-size:16px; color:var(--color-primary);">
+          Ghid Alergeni Preparat
+        </h3>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="closeWaiterAllergensModal()">✕</button>
+      </div>
+      <div id="waiter-modal-body" style="padding:var(--space-md) 0; font-size:13px; max-height:350px; overflow-y:auto; line-height:1.6;">
+      </div>
+      <div style="border-top:1px solid var(--color-border); padding-top:var(--space-xs); text-align:right;">
+        <button class="btn btn-secondary" onclick="closeWaiterAllergensModal()">Închide</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/js/app.js"></script>
   <script>
     let currentTable = 1;
     let tablesData = [];
     let menuData = [];
     let extrasData = [];
+    let allergensGuide = [];
     let draftItems = [];
 
     async function initWaiter() {
-      await Promise.all([loadTables(), loadMenu(), loadExtras()]);
+      await Promise.all([loadTables(), loadMenu(), loadExtras(), loadAllergens()]);
       selectSubtable(1);
+    }
+
+    async function loadAllergens() {
+      try {
+        const res = await fetch('/api/allergens');
+        const data = await res.json();
+        if (data.success) {
+          allergensGuide = data.allergens;
+        }
+      } catch (err) {
+        console.error('Eroare încărcare ghid alergeni:', err);
+      }
     }
 
     async function loadTables() {
@@ -403,12 +436,57 @@
       const select = document.getElementById('dish-select');
       const selectedId = select.value;
       const dish = menuData.find(d => d.id === selectedId);
+      const btnAllergens = document.getElementById('btn-show-allergens');
+      const allergensDisplay = document.getElementById('dish-allergens-display');
+
       if (dish) {
         document.getElementById('dish-price-display').textContent = `${Number(dish.price).toFixed(2).replace('.', ',')} lei`;
         document.getElementById('dish-weight-display').textContent = dish.weight ? `⚖️ Gramaj: ${dish.weight}` : '';
-        const allergensList = (dish.allergens && dish.allergens.length > 0) ? `⚠️ Alergeni: grupele ${dish.allergens.join(', ')}` : '✓ Fără alergeni majori';
-        document.getElementById('dish-allergens-display').textContent = allergensList;
+        
+        if (dish.allergens && dish.allergens.length > 0) {
+          const names = dish.allergens.map(id => {
+            const info = allergensGuide.find(a => a.id === id);
+            return info ? `${id}. ${info.shortName || info.name}` : `gr. ${id}`;
+          }).join(', ');
+          allergensDisplay.textContent = `⚠️ Alergeni: ${names}`;
+          btnAllergens.style.display = 'inline-block';
+        } else {
+          allergensDisplay.textContent = '✓ Fără alergeni majori declarați';
+          btnAllergens.style.display = 'none';
+        }
       }
+    }
+
+    function openWaiterAllergensModal() {
+      const select = document.getElementById('dish-select');
+      const selectedId = select.value;
+      const dish = menuData.find(d => d.id === selectedId);
+      if (!dish) return;
+
+      document.getElementById('waiter-modal-title').textContent = `Alergeni: ${dish.name}`;
+      const container = document.getElementById('waiter-modal-body');
+      
+      const allergenIds = dish.allergens || [];
+      if (allergenIds.length === 0) {
+        container.innerHTML = '<div style="color:var(--color-success); font-weight:600;">Acest preparat nu conține alergeni majori declarați conform Directivei CE 2000-13 / H.G. 751/2008.</div>';
+      } else {
+        container.innerHTML = '<div style="font-weight:700; margin-bottom:8px; color:var(--color-primary);">Alergeni prezenți în preparat:</div>' +
+          allergenIds.map(id => {
+            const info = allergensGuide.find(a => a.id === id);
+            return `
+              <div style="background:var(--color-surface-subtle); border-left:3px solid var(--color-warning); padding:8px 12px; margin-bottom:6px; border-radius:var(--radius-sm);">
+                <strong>Grupa ${id}: ${info ? info.name : 'Alergen'}</strong>
+                <div style="font-size:12px; color:var(--color-text-muted);">${info ? info.description : ''}</div>
+              </div>
+            `;
+          }).join('');
+      }
+
+      document.getElementById('waiter-allergens-modal').classList.add('open');
+    }
+
+    function closeWaiterAllergensModal() {
+      document.getElementById('waiter-allergens-modal').classList.remove('open');
     }
 
     function addItemToDraft() {
@@ -417,7 +495,13 @@
       const dish = menuData.find(d => d.id === dishId);
       if (!dish) return;
 
-      const qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
+      const rawQty = parseInt(document.getElementById('qty-input').value, 10);
+      if (isNaN(rawQty) || rawQty <= 0) {
+        showToast('Cantitatea trebuie să fie un număr pozitiv mai mare decât 0 (minim 1 porție).', 'warning');
+        document.getElementById('qty-input').value = 1;
+        return;
+      }
+      const qty = rawQty;
 
       // Selectează extras bifate
       const selectedExtras = [];

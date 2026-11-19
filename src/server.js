@@ -258,10 +258,24 @@ app.post('/api/payments', async (req, res) => {
   }
 });
 
+// Obținere istoric plăți / bonuri fiscale emise pentru ecranul de casă
+app.get('/api/payments', (req, res) => {
+  try {
+    const payments = db.getPayments(30);
+    const formatted = payments.map(p => ({
+      ...p,
+      pdf_url: p.pdf_receipt_path ? `/receipts/${p.pdf_receipt_path}` : null
+    }));
+    res.json({ success: true, payments: formatted });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Descărcare directă bon fiscal PDF cu protecție sanitară strictă (anti-Path Traversal)
 app.get('/api/receipts/:fileName', (req, res) => {
   const cleanName = path.basename(req.params.fileName);
-  if (!/^bon_pay-\d+-\d+\.pdf$/.test(cleanName)) {
+  if (!/^bon_[a-zA-Z0-9_-]+\.pdf$/.test(cleanName)) {
     return res.status(400).send('Nume fișier invalid.');
   }
   const filePath = path.join(receiptsDir, cleanName);
