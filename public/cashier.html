@@ -178,7 +178,7 @@
           <strong>RESTAURANT KON TIKI</strong><br>
           CUI: RO48920114 · J40/1234/2026<br>
           Str. Restaurantului nr. 12<br>
-          BON FISCAL CONSOLIDAT (D-006)
+          BON FISCAL CONSOLIDAT
         </div>
         <div id="receipt-items-container">
           <!-- Populat dinamic -->
@@ -207,6 +207,11 @@
         🖨️ Încasează & Emite Bon Fiscal PDF
       </button>
 
+      <!-- Buton Re-afișare Chitanță Veche / Ultimul Bon -->
+      <button class="btn btn-secondary" id="btn-reopen-receipt" style="padding:11px; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="reopenOldReceipt()">
+        🧾 Chitanță Veche (Re-tipărește Ultimul Bon)
+      </button>
+
     </div>
 
   </div>
@@ -215,7 +220,7 @@
   <div class="modal-overlay" id="payment-success-modal">
     <div class="modal-box">
       <div style="font-size: 40px;">🧾</div>
-      <h2 style="font-family: var(--font-heading); color: var(--color-success); font-size: 22px;">Plată Înregistrată cu Succes!</h2>
+      <h2 id="modal-payment-title" style="font-family: var(--font-heading); color: var(--color-success); font-size: 22px;">Plată Înregistrată cu Succes!</h2>
       <p id="modal-payment-summary" style="color: var(--color-text-muted); font-size: 14px;"></p>
       
       <div style="display:flex; flex-direction:column; gap:8px;">
@@ -372,21 +377,72 @@
         if (data.success) {
           showToast(`✓ Încasare confirmată pentru Masa ${activeTable}!`, 'success');
           
-          // Deschidere modal succes cu link descărcare PDF
-          document.getElementById('modal-payment-summary').innerHTML = `
-            Consumația cumulată a Mesei ${activeTable} în valoare de <strong>${data.payment.total_amount.toFixed(2)} LEI</strong> 
-            a fost achitată prin <strong>${data.payment.payment_method === 'Card' ? 'Card (POS Fizic)' : 'Numerar'}</strong>.<br>
-            Masa a fost marcată automat ca <strong>Liberă</strong>.
-          `;
-          document.getElementById('btn-download-pdf').href = data.pdf_url;
-          document.getElementById('payment-success-modal').classList.add('open');
+          lastPaymentData = {
+            table_number: activeTable,
+            total_amount: data.payment.total_amount,
+            payment_method: data.payment.payment_method,
+            pdf_url: data.pdf_url,
+            paid_at: data.payment.paid_at || new Date().toISOString()
+          };
+          localStorage.setItem('kt_last_receipt', JSON.stringify(lastPaymentData));
 
+          showReceiptModal(lastPaymentData, true);
           loadCashierData();
+          loadRecentPayments();
         } else {
           showToast(`Eroare încasare: ${data.error}`, 'error');
         }
       } catch (err) {
         showToast('Eroare rețea la procesarea plății', 'error');
+      }
+    }
+
+    let lastPaymentData = null;
+    try {
+      const saved = localStorage.getItem('kt_last_receipt');
+      if (saved) lastPaymentData = JSON.parse(saved);
+    } catch {}
+
+    function showReceiptModal(p, isNew = false) {
+      const timeStr = p.paid_at ? new Date(p.paid_at).toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' }) : '';
+      const titleEl = document.getElementById('modal-payment-title');
+      if (titleEl) {
+        titleEl.textContent = isNew ? 'Plată Înregistrată cu Succes!' : '🧾 Chitanță Veche (Bon Fiscal)';
+      }
+      document.getElementById('modal-payment-summary').innerHTML = `
+        Consumația Mesei ${p.table_number} în valoare de <strong>${Number(p.total_amount).toFixed(2)} LEI</strong><br>
+        Achitată prin <strong>${p.payment_method === 'Card' ? 'Card (POS Fizic)' : 'Numerar'}</strong> ${timeStr ? 'la ora ' + timeStr : ''}.<br>
+        ${isNew ? 'Masa a fost marcată automat ca <strong>Liberă</strong>.' : 'Puteți descărca sau reimprima bonul oricând.'}
+      `;
+      document.getElementById('btn-download-pdf').href = p.pdf_url;
+      document.getElementById('payment-success-modal').classList.add('open');
+    }
+
+    async function reopenOldReceipt() {
+      if (lastPaymentData && lastPaymentData.pdf_url) {
+        showReceiptModal(lastPaymentData, false);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/payments');
+        const data = await res.json();
+        if (data.success && data.payments && data.payments.length > 0) {
+          const latest = data.payments[0];
+          lastPaymentData = {
+            table_number: latest.table_number,
+            total_amount: latest.total_amount,
+            payment_method: latest.payment_method,
+            pdf_url: latest.pdf_url,
+            paid_at: latest.paid_at
+          };
+          localStorage.setItem('kt_last_receipt', JSON.stringify(lastPaymentData));
+          showReceiptModal(lastPaymentData, false);
+        } else {
+          showToast('Nu există nicio chitanță emisă anterior.', 'info');
+        }
+      } catch (err) {
+        showToast('Eroare la încărcarea chitanței vechi.', 'error');
       }
     }
 

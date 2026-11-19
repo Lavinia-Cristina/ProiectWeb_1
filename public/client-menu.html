@@ -391,8 +391,9 @@
       <div class="restaurant-meta">
         <div class="table-indicator" style="display:flex; align-items:center; gap:6px;">
           <span>📍</span>
-          <label for="table-picker" style="font-size:12px; font-weight:700; color:var(--color-primary);">Masa:</label>
-          <select id="table-picker" class="table-select-header" onchange="onSelectTable(this.value)" style="padding:3px 8px; border-radius:var(--radius-sm); border:1px solid var(--color-border); background:var(--color-surface); font-weight:700; font-size:13px; color:var(--color-primary); cursor:pointer;">
+          <span id="current-table-label" style="font-size:13px; font-weight:700; color:#ffffff;">Masa 1</span>
+          <button type="button" class="btn btn-secondary" onclick="openTableSelectModal()" style="padding:2px 8px; font-size:11px; font-weight:700; background:rgba(255,255,255,0.2); color:#ffffff; border:1px solid rgba(255,255,255,0.4); border-radius:var(--radius-sm); cursor:pointer;" title="Schimbă masa la care comandați">🔄 Schimbă masa</button>
+          <select id="table-picker" class="table-select-header" onchange="onSelectTable(this.value)" style="display:none;">
             <option value="1">Masa 1</option>
             <option value="2">Masa 2</option>
             <option value="3">Masa 3</option>
@@ -468,6 +469,31 @@
       </a>
     </footer>
 
+  </div>
+
+  <!-- Modal Schimbă Masa Client (1 - 12) -->
+  <div class="modal-overlay" id="table-select-modal" role="dialog" aria-modal="true" aria-labelledby="table-modal-title">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-header">
+        <div>
+          <h2 id="table-modal-title" style="font-family:var(--font-heading); font-size:17px; color:var(--color-primary); margin:0;">
+            📍 Selectează Masa (1 - 12)
+          </h2>
+          <div style="font-size:12px; color:var(--color-text-muted); margin-top:2px;">
+            Alege masa la care ești așezat pentru sincronizarea comenzilor.
+          </div>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="closeTableSelectModal()" aria-label="Închide">✕</button>
+      </div>
+      <div class="modal-body" style="padding:var(--space-md);">
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;" id="table-picker-grid">
+          <!-- Populat dinamic cu butoanele Mesei 1 - 12 -->
+        </div>
+      </div>
+      <div style="padding: var(--space-sm) var(--space-md); background:var(--color-surface-subtle); border-top:1px solid var(--color-border); text-align:right;">
+        <button class="btn btn-secondary" onclick="closeTableSelectModal()">Închide</button>
+      </div>
+    </div>
   </div>
 
   <!-- Modal 1: Ghidul Complet al celor 15 Alergeni Oficiali -->
@@ -576,20 +602,90 @@
     const urlParams = new URLSearchParams(window.location.search);
     let tableNumber = parseInt(urlParams.get('masa') || localStorage.getItem('kt_selected_table') || '1', 10);
     if (isNaN(tableNumber) || tableNumber < 1 || tableNumber > 12) tableNumber = 1;
+    localStorage.setItem('kt_selected_table', tableNumber);
 
-    const tablePicker = document.getElementById('table-picker');
-    if (tablePicker) tablePicker.value = tableNumber;
-    document.getElementById('order-status-link').href = `/order-status.html?masa=${tableNumber}`;
+    function syncClientTableUI() {
+      const tablePicker = document.getElementById('table-picker');
+      if (tablePicker) tablePicker.value = tableNumber;
 
-    function onSelectTable(val) {
+      const currentTableLabel = document.getElementById('current-table-label');
+      if (currentTableLabel) currentTableLabel.textContent = `Masa ${tableNumber}`;
+
+      const orderStatusLink = document.getElementById('order-status-link');
+      if (orderStatusLink) orderStatusLink.href = `/order-status.html?masa=${tableNumber}`;
+
+      const statusLabel = document.getElementById('table-status-label');
+      if (statusLabel) statusLabel.textContent = `Stadiul comenzii pentru Masa ${tableNumber}`;
+
+      const modalTableLabel = document.getElementById('order-modal-table-label');
+      if (modalTableLabel) modalTableLabel.textContent = `Masa ${tableNumber}`;
+    }
+
+    syncClientTableUI();
+
+    function openTableSelectModal() {
+      renderTablePickerGrid();
+      document.getElementById('table-select-modal').classList.add('open');
+    }
+
+    function closeTableSelectModal() {
+      document.getElementById('table-select-modal').classList.remove('open');
+    }
+
+    function renderTablePickerGrid() {
+      const grid = document.getElementById('table-picker-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      for (let i = 1; i <= 12; i++) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `btn ${i === tableNumber ? 'btn-primary' : 'btn-secondary'}`;
+        btn.style.cssText = 'padding:12px 6px; font-weight:700; font-size:14px; text-align:center; border-radius:var(--radius-md);';
+        btn.textContent = `Masa ${i}`;
+        btn.onclick = () => {
+          onSelectTable(i);
+          closeTableSelectModal();
+        };
+        grid.appendChild(btn);
+      }
+    }
+
+    function onSelectTable(val, notifyServer = true) {
       tableNumber = parseInt(val, 10);
+      if (isNaN(tableNumber) || tableNumber < 1 || tableNumber > 12) tableNumber = 1;
       localStorage.setItem('kt_selected_table', tableNumber);
+
       const url = new URL(window.location);
       url.searchParams.set('masa', tableNumber);
       window.history.replaceState({}, '', url);
-      document.getElementById('order-status-link').href = `/order-status.html?masa=${tableNumber}`;
-      showToast(`Ați selectat Masa ${tableNumber}`, 'info');
+
+      syncClientTableUI();
+      if (notifyServer) {
+        fetch('/api/client-table', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ table_number: tableNumber })
+        }).catch(() => {});
+        showToast(`Ați selectat Masa ${tableNumber}`, 'info');
+      }
     }
+
+    // Notificare inițială către server pentru sincronizare cu waiter și order-status
+    fetch('/api/client-table', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ table_number: tableNumber })
+    }).catch(() => {});
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'kt_selected_table' && e.newValue) {
+        const newTable = parseInt(e.newValue, 10);
+        if (!isNaN(newTable) && newTable >= 1 && newTable <= 12 && newTable !== tableNumber) {
+          tableNumber = newTable;
+          syncClientTableUI();
+        }
+      }
+    });
 
     let allMenuData = [];
     let allExtrasData = [];
@@ -826,11 +922,12 @@
       document.getElementById('order-modal-qty').textContent = currentOrderQty;
       document.getElementById('order-modal-table-label').textContent = `Masa ${tableNumber}`;
 
-      // Populează opțiuni extra disponibile
+      // Populează opțiuni extra disponibile (dacă preparatul nu este el însuși un produs extra)
+      const isExtraDish = dish.category === 'Diverse & Extra' || dish.id.startsWith('diverse_') || dish.id.startsWith('extra_');
       const extrasContainer = document.getElementById('order-modal-extras-list');
       extrasContainer.innerHTML = '';
       
-      if (!allExtrasData || allExtrasData.length === 0) {
+      if (isExtraDish || !allExtrasData || allExtrasData.length === 0) {
         document.getElementById('order-modal-extras-section').style.display = 'none';
       } else {
         document.getElementById('order-modal-extras-section').style.display = 'block';
@@ -858,9 +955,16 @@
     }
 
     function changeOrderQty(delta) {
-      currentOrderQty += delta;
-      if (currentOrderQty < 1) currentOrderQty = 1;
-      if (currentOrderQty > 50) currentOrderQty = 50;
+      const nextQty = currentOrderQty + delta;
+      if (nextQty <= 0) {
+        showToast('Eroare: Cantitatea nu poate fi 0 sau un număr negativ! Minimul este de 1 porție.', 'error');
+        return;
+      }
+      if (nextQty > 50) {
+        showToast('Cantitatea maximă admisă este de 50 de porții.', 'warning');
+        return;
+      }
+      currentOrderQty = nextQty;
       document.getElementById('order-modal-qty').textContent = currentOrderQty;
       updateOrderModalTotal();
     }

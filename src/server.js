@@ -67,8 +67,24 @@ app.get('/api/events', (req, res) => {
 });
 
 // ==========================================
-// 2. RUTE MESE (1 - 12)
+// 2. RUTE MESE (1 - 12) & SINCRONIZARE MASĂ CLIENT
 // ==========================================
+let activeClientTable = 1;
+
+app.get('/api/client-table', (req, res) => {
+  res.json({ success: true, table_number: activeClientTable });
+});
+
+app.post('/api/client-table', (req, res) => {
+  const tableNum = Number(req.body.table_number);
+  if (!Number.isInteger(tableNum) || tableNum < 1 || tableNum > 12) {
+    return res.status(400).json({ success: false, error: 'Număr masă invalid: trebuie să fie între 1 și 12.' });
+  }
+  activeClientTable = tableNum;
+  sseHub.broadcast('client:table_selected', { table_number: activeClientTable });
+  res.json({ success: true, table_number: activeClientTable });
+});
+
 app.get('/api/tables', (req, res) => {
   try {
     const tables = db.getTables();
@@ -172,12 +188,27 @@ app.post('/api/orders', (req, res) => {
   try {
     const { table_number, items, client_supplied_price } = req.body;
 
-    // Plasare atomică în SQLite (D-004: prețul din client este ignorat autoritar)
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ success: false, error: 'Comanda trebuie să conțină cel puțin un preparat.' });
+    }
+    for (const item of items) {
+      if (!item || typeof item.quantity !== 'number' || item.quantity <= 0 || !Number.isInteger(item.quantity)) {
+        return res.status(400).json({
+          success: false,
+          error: `Cantitate invalidă (${item ? item.quantity : 'nedefinită'}). Nu se pot comanda cantități zero sau numere negative!`
+        });
+      }
+    }
+
+    // Plasare atomică în SQLite (prețul din client este ignorat autoritar)
     const order = db.placeOrderAtomic({
       table_number: Number(table_number),
       items,
       client_supplied_price
     });
+
+    activeClientTable = Number(table_number);
+    sseHub.broadcast('client:table_selected', { table_number: activeClientTable });
 
     // Emisie SSE instant către KDS și mese
     sseHub.broadcast('order:new', order);
@@ -359,6 +390,8 @@ app.post('/api/admin/restock', (req, res) => {
 app.post('/api/admin/reset', (req, res) => {
   try {
     seedDatabase(DB_PATH);
+    activeClientTable = 1;
+    sseHub.broadcast('client:table_selected', { table_number: 1 });
     sseHub.broadcast('system:reset', { time: Date.now() });
     res.json({ success: true, message: 'Baza de date a fost resetată cu datele inițiale Kon Tiki.' });
   } catch (err) {
