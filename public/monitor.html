@@ -144,10 +144,10 @@
 
     <!-- Ticker Comenzi Gata de Preluare -->
     <div class="ready-ticker-bar" id="ready-ticker">
-      <div class="ready-ticker-icon">🔔</div>
-      <div style="font-weight:700; font-size:14px; color:var(--color-success);">GATA DE PRELUARE OSPĂTARI:</div>
+      <div class="ready-ticker-icon" id="ready-ticker-icon">🔔</div>
+      <div style="font-weight:700; font-size:14px; color:var(--color-success);" id="ready-ticker-title">GATA DE PRELUARE OSPĂTARI:</div>
       <div class="ready-ticker-content" id="ready-chips-container">
-        <span style="font-size:13px; color:var(--color-text-muted);">Nicio comandă în așteptare de preluare. Bucătăria lucrează la comenzi.</span>
+        <span style="font-size:13px; color:var(--color-text-muted);">Se verifică comenzile active...</span>
       </div>
     </div>
 
@@ -178,14 +178,23 @@
     }
 
     function renderMonitor(tables, orders) {
-      // 1. Ticker comenzi gata
+      // 1. Ticker comenzi gata / în preparare
       const readyOrders = orders.filter(o => o.status === 'gata');
+      const inPrepOrders = orders.filter(o => o.status === 'plasată' || o.status === 'în preparare');
       const tickerContainer = document.getElementById('ready-chips-container');
+      const tickerTitle = document.getElementById('ready-ticker-title');
+      const tickerIcon = document.getElementById('ready-ticker-icon');
+      const tickerBar = document.getElementById('ready-ticker');
       tickerContainer.innerHTML = '';
 
-      if (readyOrders.length === 0) {
-        tickerContainer.innerHTML = '<span style="font-size:13px; color:var(--color-text-muted);">Toate preparatele finalizate au fost preluate de ospătari.</span>';
-      } else {
+      if (readyOrders.length > 0) {
+        tickerBar.style.borderColor = 'var(--color-success)';
+        tickerBar.style.boxShadow = '0 0 15px rgba(45, 106, 79, 0.3)';
+        tickerIcon.textContent = '🔔';
+        tickerIcon.style.animation = 'bellShake 1.5s infinite';
+        tickerTitle.textContent = `GATA DE PRELUARE OSPĂTARI (${readyOrders.length}):`;
+        tickerTitle.style.color = 'var(--color-success)';
+
         for (const ord of readyOrders) {
           const chip = document.createElement('div');
           chip.className = 'ready-chip';
@@ -194,6 +203,25 @@
           `;
           tickerContainer.appendChild(chip);
         }
+      } else if (inPrepOrders.length > 0) {
+        // Dacă există comenzi active în preparare, NU afișăm că sunt gata preparările!
+        tickerBar.style.borderColor = 'var(--color-warning)';
+        tickerBar.style.boxShadow = '0 0 12px rgba(217, 119, 6, 0.25)';
+        tickerIcon.textContent = '👨‍🍳';
+        tickerIcon.style.animation = 'none';
+        tickerTitle.textContent = `ÎN PREPARARE LA BUCĂTĂRIE (${inPrepOrders.length}):`;
+        tickerTitle.style.color = 'var(--color-warning)';
+
+        const activeTableNames = [...new Set(inPrepOrders.map(o => `Masa ${o.table_number}`))].join(', ');
+        tickerContainer.innerHTML = `<span style="font-size:13px; color:var(--color-text);">Preparatele sunt în curs de pregătire la bucătărie (${activeTableNames}). Niciun preparat nu este încă gata de preluare.</span>`;
+      } else {
+        tickerBar.style.borderColor = 'var(--color-border)';
+        tickerBar.style.boxShadow = 'none';
+        tickerIcon.textContent = '✓';
+        tickerIcon.style.animation = 'none';
+        tickerTitle.textContent = 'STATUS SALĂ & BUCĂTĂRIE:';
+        tickerTitle.style.color = 'var(--color-text-muted)';
+        tickerContainer.innerHTML = '<span style="font-size:13px; color:var(--color-text-muted);">Nu există comenzi active în lucru. Toate mesele sunt servite.</span>';
       }
 
       // 2. Matrice 12 Mese
