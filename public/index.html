@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Kon Tiki — Hub Principal & Meniu Digital</title>
+  <meta name="description" content="Restaurant Kon Tiki — Specific tradițional românesc, renumit pentru ciorba de burtă, preparate calde și meniu digital cu disponibilitate în timp real pentru 12 mese.">
+  <link rel="canonical" href="https://restaurantkontiki.ro/">
+  
+  <!-- OpenGraph & Social Graph -->
+  <meta property="og:type" content="restaurant">
+  <meta property="og:title" content="Restaurant Kon Tiki — Hub & Meniu Digital">
+  <meta property="og:description" content="Meniu digital complet, comenzi rapide la masă și preparate tradiționale românești.">
+  <meta property="og:url" content="https://restaurantkontiki.ro/">
+  <meta property="og:locale" content="ro_RO">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Schema.org JSON-LD Structured Data (GEO & Search Engine Rich Results) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Restaurant Kon Tiki",
+    "legalName": "SC KON TIKI BISTRÔ SRL",
+    "description": "Restaurant tradițional românesc recunoscut pentru ciorba de burtă autentică, preparate calde și meniu digital interactiv pentru 12 mese.",
+    "servesCuisine": ["Românească", "Tradițională"],
+    "priceRange": "$$",
+    "currenciesAccepted": "RON",
+    "paymentAccepted": "Cash, Credit Card",
+    "acceptsReservations": "True",
+    "telephone": "+40269123456",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Str. Restaurantului nr. 12",
+      "addressLocality": "Sector 1",
+      "addressRegion": "București",
+      "addressCountry": "RO"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 44.4268,
+      "longitude": 26.1025
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "opens": "10:00",
+        "closes": "23:00"
+      }
+    ],
+    "hasMenu": "https://restaurantkontiki.ro/client-menu.html"
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+  <style>
+    .hub-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-xl) var(--space-md);
+    }
+    .hero-banner {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+    .hero-text h1 {
+      font-family: var(--font-heading);
+      font-size: 32px;
+      color: var(--color-primary);
+      margin-bottom: var(--space-xs);
+    }
+    .hero-text p {
+      color: var(--color-text-muted);
+      max-width: 650px;
+      font-size: 15px;
+    }
+    .quick-stats {
+      display: flex;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+    .stat-box {
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+    .stat-val {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .stat-lbl {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: var(--space-lg);
+    }
+    .module-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition-fast), border-color var(--transition-fast);
+      text-decoration: none;
+      color: inherit;
+    }
+    .module-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--color-primary);
+    }
+    .module-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-sm);
+    }
+    .module-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--color-surface-subtle);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .module-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-primary);
+      background: var(--color-surface-subtle);
+      padding: 4px 8px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--color-border);
+    }
+    .module-title {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      margin-bottom: var(--space-2xs);
+      color: var(--color-text);
+    }
+    .module-desc {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-md);
+      flex-grow: 1;
+    }
+    .module-link-action {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2xs);
+      color: var(--color-primary);
+      font-weight: 600;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header & Top Navigation -->
+  <header>
+    <nav class="top-navbar" aria-label="Bara principală de navigare">
+      <a href="/" class="brand-title">
+        🍲 Restaurant Kon Tiki
+      </a>
+      <div class="nav-links">
+        <span id="sse-status-badge" class="badge badge-warning">○ Conectare...</span>
+        <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută modul de culoare">
+          <span id="theme-toggle-label">🌙 Temă</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="hub-container">
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="hero-text">
+        <h1>Sistem Integrat Restaurant Kon Tiki</h1>
+        <p>Aplicație web pentru <strong>12 mese</strong>: Meniu Digital QR, comenzi în timp real fără polling (SSE), calcul autoritar pe server, gestionare tranzacțională a stocului de ingrediente și Kitchen Display System.</p>
+      </div>
+      <div class="quick-stats">
+        <div class="stat-box">
+          <div class="stat-val" id="stat-tables">12</div>
+          <div class="stat-lbl">Mese Sală</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="stat-dishes">3</div>
+          <div class="stat-lbl">Preparate</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="stat-active-orders">0</div>
+          <div class="stat-lbl">Comenzi Active</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modules Grid (PATTERN-001: Rutare directă fără formulare blocante) -->
+    <div class="modules-grid">
+
+      <!-- 1. Meniu Digital Client -->
+      <a href="/client-menu.html?masa=1" class="module-card">
+        <div class="module-header">
+          <div class="module-icon">📱</div>
+          <span class="module-badge">DS-kt-client-menu</span>
+        </div>
+        <h2 class="module-title">Meniu Digital Mobil</h2>
+        <p class="module-desc">Accesibil clienților prin codul QR de pe masă. Afișează preparatele, alergenii și disponibilitatea calculată în timp real pe baza stocului de ingrediente.</p>
+        <div class="module-link-action">
+          <span>Deschide Meniu (Masa 1)</span>
+          <span aria-hidden="true">→</span>
+        </div>
+      </a>
+
+      <!-- 2. Stadiu Comandă Masă -->
+      <a href="/order-status.html?masa=1" class="module-card">
+        <div class="module-header">
+          <div class="module-icon">⏳</div>
+          <span class="module-badge">DS-kt-order-status</span>
+        </div>
+        <h2 class="module-title">Stadiul Comenzii la Masă</h2>
+        <p class="module-desc">Clientul vizualizează în timp real pe telefon etapele preparării (plasată ➔ în preparare ➔ gata de servire ➔ servită) cu sincronizare instantanee via SSE.</p>
+        <div class="module-link-action">
+          <span>Urmărește Comanda (Masa 1)</span>
+          <span aria-hidden="true">→</span>
+        </div>
+      </a>
+
+      <!-- 3. Preluare Comenzi Ospătar -->
+      <a href="/waiter.html" class="module-card">
+        <div class="module-header">
+          <div class="module-icon">🤵</div>
+          <span class="module-badge">DS-kt-waiter-orders</span>
+        </div>
+        <h2 class="module-title">Preluare Comenzi Ospătar</h2>
+        <p class="module-desc">Interfață pentru tabletă. Selector rapid pentru cele 12 mese, gestionare rezervări verbale, adăugare preparate, configurare opțiuni extra și transmitere instantă către bucătărie.</p>
+        <div class="module-link-action">
+          <span>Deschide Tabletă Ospătar</span>
+          <span aria-hidden="true">→</span>
+        </div>
+      </a>
+
+      <!-- 4. Kitchen Display System (KDS) -->
+      <a href="/kds.html" class="module-card">
+        <div class="module-header">
+          <div class="module-icon">👨‍🍳</div>
+          <span class="module-badge">DS-kt-kds</span>
+        </div>
+        <h2 class="module-title">Kitchen Display System (KDS)</h2>
+        <p class="module-desc">Ecran bucătărie în timp real. Cronometrează prepararea cu alertă cromatică în două trepte (galben 10–15 min, roșu critic ≥15 min) și marcare instantă a comenzilor gata.</p>
+        <div class="module-link-action">
+          <span>Deschide Ecran Bucătărie</span>
+          <span aria-hidden="true">→</span>
+        </div>
+      </a>
+
+      <!-- 5. Ecran Casă / Încasare -->
+      <a href="/cashier.html" class="module-card">
+        <div class="module-header">
+          <div class="module-icon">💳</div>
+          <span class="module-badge">DS-kt-cashier</span>
+        </div>
+        <h2 class="module-title">Ecran Casă / Încasare & Bon Fiscal</h2>
+        <p class="module-desc">Consum cumulativ per masă (D-006) calculat autoritar pe server (D-004). Înregistrează plata cu Card prin POS fizic sau Numerar și generează bonul fiscal în format PDF.</p>
+        <div class="module-link-action">
+          <span>Deschide Casă de Marcat</span>
+          <span aria-hidden="true">→</span>
+        </div>
+      </a>
+
+      <!-- 6. Monitor Restaurant -->
+      <a href="/monitor.html" class="module-card">
+        <div class="module-header">
+          <div class="module-icon">🖥️</div>
+          <span class="module-badge">DS-kt-restaurant-monitor</span>
+        </div>
+        <h2 class="module-title">Monitor Central Restaurant</h2>
+        <p class="module-desc">Panou de coordonare afișat în sală. Oferă o privire de ansamblu asupra stării celor 12 mese și alertează sonor/vizual când o comandă este gata de preluare.</p>
+        <div class="module-link-action">
+          <span>Deschide Monitor Sală</span>
+          <span aria-hidden="true">→</span>
+        </div>
+      </a>
+
+      <!-- 7. Administrare Stocuri & Rețete -->
+      <a href="/admin.html" class="module-card">
+        <div class="module-header">
+          <div class="module-icon">📦</div>
+          <span class="module-badge">DS-kt-admin</span>
+        </div>
+        <h2 class="module-title">Administrare Stocuri & Rețete</h2>
+        <p class="module-desc">Gestionarea ingredientelor (cupe, porții, coșulețe), praguri de alertă stoc redus, aprovizionare rapidă și monitorizarea compoziției rețetelor.</p>
+        <div class="module-link-action">
+          <span>Deschide Inventar & Admin</span>
+          <span aria-hidden="true">→</span>
+        </div>
+      </a>
+
+      <!-- 8. Standuri QR Mese (Printare) -->
+      <a href="/qr-tables.html" class="module-card">
+        <div class="module-header">
+          <div class="module-icon">🖨️</div>
+          <span class="module-badge">DS-kt-qr-tables</span>
+        </div>
+        <h2 class="module-title">Tipărire Standuri QR Mese 1–12</h2>
+        <p class="module-desc">Generare server-side de coduri QR pentru standurile fizice de pe mese, optimizate pentru format A4 gata de tipărit și așezat pe mese.</p>
+        <div class="module-link-action">
+          <span>Vezi Standuri QR</span>
+          <span aria-hidden="true">→</span>
+        </div>
+      </a>
+
+    </div>
+
+  </main>
+
+  <!-- Subsol Semantic cu Date Locale de Afacere (NAP: Name, Address, Phone & Orar) -->
+  <footer style="margin-top: var(--space-2xl); padding: var(--space-xl) var(--space-md); border-top: 1px solid var(--color-border); text-align: center; color: var(--color-text-muted); font-size: 13px;">
+    <div style="font-weight: 700; color: var(--color-text); margin-bottom: 6px; font-size: 14px;">
+      SC KON TIKI BISTRÔ SRL · Restaurant Kon Tiki (12 Mese)
+    </div>
+    <div style="margin-bottom: 6px;">
+      📍 Adresă: Str. Restaurantului nr. 12, Sector 1, București &nbsp;|&nbsp; 
+      📞 Rezervări telefonice mese: <a href="tel:+40269123456" style="color: var(--color-primary); font-weight: 700; text-decoration: underline;">0269.123.456</a> &nbsp;|&nbsp; 
+      🕒 Program: Luni – Duminică 10:00 – 23:00
+    </div>
+    <div style="font-size: 12px; color: var(--color-text-muted);">
+      Meniu complet digital cu 93 de preparate tradiționale, gramaje oficiale și lista completă a celor 15 grupe de alergeni conform Directivei CE 2000-13 și H.G. 751/2008.
+    </div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+  <script>
+    async function loadStats() {
+      try {
+        const resTables = await fetch('/api/tables');
+        const dataTables = await resTables.json();
+        if (dataTables.success) {
+          document.getElementById('stat-tables').textContent = dataTables.tables.length;
+        }
+
+        const resOrders = await fetch('/api/orders?activeOnly=true');
+        const dataOrders = await resOrders.json();
+        if (dataOrders.success) {
+          document.getElementById('stat-active-orders').textContent = dataOrders.orders.length;
+        }
+
+        const resMenu = await fetch('/api/menu');
+        const dataMenu = await resMenu.json();
+        if (dataMenu.success) {
+          document.getElementById('stat-dishes').textContent = dataMenu.menu.length;
+        }
+      } catch (err) {
+        console.error('Eroare încărcare statistici:', err);
+      }
+    }
+
+    loadStats();
+    sseClient.on('order:new', () => loadStats());
+    sseClient.on('order:status', () => loadStats());
+    sseClient.on('payment:done', () => loadStats());
+  </script>
+</body>
+</html>

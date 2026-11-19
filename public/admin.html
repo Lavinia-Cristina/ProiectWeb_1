@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Administrare Stocuri & Rețete · Restaurant Kon Tiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+  <style>
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+    .admin-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-xs);
+    }
+    .card-header-title {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      color: var(--color-primary);
+    }
+    /* Tabel Inventar */
+    .inventory-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .inventory-table th {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 2px solid var(--color-border);
+      color: var(--color-text-muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .inventory-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+    .stock-val-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .stock-ok { background: #e8f5e9; color: var(--color-success); }
+    .stock-low { background: #fee2e2; color: var(--color-danger); }
+    [data-theme="dark"] .stock-ok { background: #1a3821; }
+    [data-theme="dark"] .stock-low { background: #3d1b1b; }
+    
+    .restock-form {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .restock-input {
+      width: 70px;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-family: inherit;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <nav class="top-navbar">
+    <div style="display:flex; align-items:center; gap:var(--space-md);">
+      <a href="/" class="brand-title">🍲 Restaurant Kon Tiki</a>
+      <span class="badge badge-info">Panou Administrare</span>
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Hub</a>
+      <a href="/kds.html" class="nav-link">Bucătărie</a>
+      <a href="/waiter.html" class="nav-link">Ospătar</a>
+      <a href="/cashier.html" class="nav-link">Casă</a>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută tema">
+        <span id="theme-toggle-label">🌙 Temă</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="admin-container">
+
+    <!-- Card 1: Inventar Ingrediente & Aprovizionare -->
+    <div class="admin-card">
+      <div class="card-header-row">
+        <div>
+          <h1 class="card-header-title">Inventar Ingrediente & Stoc Curent</h1>
+          <div style="font-size:12px; color:var(--color-text-muted);">
+            Unități de măsură autorizate (CONTEXT.md): cupe, bucăți, porții, coșulețe.
+          </div>
+        </div>
+        <button class="btn btn-secondary" onclick="loadInventory()">🔄 Reîmprospătează</button>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>Ingredient</th>
+              <th>Unitate</th>
+              <th>Stoc Curent</th>
+              <th>Prag Minim Alertă</th>
+              <th>Aprovizionare Rapidă</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-tbody">
+            <tr><td colspan="5" style="text-align:center; padding:20px; color:var(--color-text-muted);">Se încarcă inventarul...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Card 2: Resetare Bază de Date (Seed) -->
+    <div class="admin-card" style="border-left: 5px solid var(--color-warning);">
+      <div class="card-header-row">
+        <h2 class="card-header-title">Mentenanță Sistem & Resetare Date Start</h2>
+        <span class="badge badge-warning">Operațiune Manager</span>
+      </div>
+      <p style="font-size:13px; color:var(--color-text-muted);">
+        Resetează toate mesele, comenzile, plățile și reinițializează stocul ingredientelor conform specificațiilor Kon Tiki (12 mese, 12 ingrediente, 3 preparate, 5 extra-uri).
+      </p>
+      <div>
+        <button class="btn btn-danger" onclick="resetDatabase()">
+          ⚠️ Resetează Baza de Date la Seed Inițial
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    async function loadInventory() {
+      try {
+        const res = await fetch('/api/admin/inventory');
+        const data = await res.json();
+        const tbody = document.getElementById('inventory-tbody');
+
+        if (!data.success || !data.inventory) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--color-danger);">Eroare la încărcarea inventarului.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        for (const ing of data.inventory) {
+          const isLow = ing.current_stock <= ing.min_threshold;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>${ing.name}</strong> <span style="font-size:11px; color:var(--color-text-muted);">(${ing.id})</span></td>
+            <td><span class="badge badge-info">${ing.unit}</span></td>
+            <td>
+              <span class="stock-val-pill ${isLow ? 'stock-low' : 'stock-ok'}">
+                ${ing.current_stock} ${ing.unit} ${isLow ? '⚠️ Stoc Critic' : '✓ OK'}
+              </span>
+            </td>
+            <td>${ing.min_threshold} ${ing.unit}</td>
+            <td>
+              <div class="restock-form">
+                <input type="number" class="restock-input" id="restock-${ing.id}" value="10" min="1" max="200">
+                <button class="btn btn-secondary" style="padding:6px 10px; font-size:12px;" onclick="restock('${ing.id}')">
+                  + Adaugă
+                </button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        }
+      } catch (err) {
+        console.error('Eroare inventar:', err);
+      }
+    }
+
+    async function restock(ingredientId) {
+      const input = document.getElementById(`restock-${ingredientId}`);
+      const quantity = parseInt(input.value, 10);
+      if (isNaN(quantity) || quantity <= 0) {
+        showToast('Introduceți o cantitate validă.', 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/admin/restock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ingredient_id: ingredientId, quantity })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✓ Aprovizionat: +${quantity} ${data.ingredient.unit} ${data.ingredient.name}`, 'success');
+          loadInventory();
+        } else {
+          showToast(`Eroare: ${data.error}`, 'error');
+        }
+      } catch (err) {
+        showToast('Eroare rețea la aprovizionare', 'error');
+      }
+    }
+
+    async function resetDatabase() {
+      if (!confirm('Sunteți sigur că doriți resetarea completă a bazei de date? Toate comenzile active și plățile vor fi curățate.')) {
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/admin/reset', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          showToast('✓ Baza de date a fost resetată cu succes!', 'success');
+          loadInventory();
+        } else {
+          showToast(`Eroare: ${data.error}`, 'error');
+        }
+      } catch (err) {
+        showToast('Eroare la resetarea bazei de date', 'error');
+      }
+    }
+
+    loadInventory();
+
+    // Actualizare live via SSE
+    sseClient.on('stock:update', () => loadInventory());
+    sseClient.on('order:new', () => loadInventory());
+    sseClient.on('system:reset', () => loadInventory());
+  </script>
+</body>
+</html>

@@ -1,4 +1,81 @@
 # docs/design/registry.yaml — every screen and shared component, by DS- ID.
 # Plans, commits, mocks and board files use the ID (tickets don't). kind: foundation | component | screen
 # status: draft (mock drawn) | approved (confirmed on the board) | implemented | deprecated (never delete an entry)
-designs: []
+designs:
+  - id: DS-kt-client-menu
+    kind: screen
+    source: public/menu.html
+    screenshots: [screens/DS-kt-client-menu.light.png, screens/DS-kt-client-menu.dark.png]
+    design_ref: mocks/DS-kt-client-menu.html
+    status: approved
+
+  - id: DS-kt-order-status
+    kind: screen
+    source: public/order-status.html
+    screenshots: [screens/DS-kt-order-status.light.png, screens/DS-kt-order-status.dark.png]
+    design_ref: mocks/DS-kt-order-status.html
+    status: approved
+
+  - id: DS-kt-waiter-orders
+    kind: screen
+    source: public/waiter.html
+    screenshots: [screens/DS-kt-waiter-orders.light.png, screens/DS-kt-waiter-orders.dark.png]
+    design_ref: mocks/DS-kt-waiter-orders.html
+    status: approved
+
+  - id: DS-kt-kds
+    kind: screen
+    source: public/kds.html
+    screenshots: [screens/DS-kt-kds.light.png, screens/DS-kt-kds.dark.png]
+    design_ref: mocks/DS-kt-kds.html
+    status: approved
+
+  - id: DS-kt-cashier
+    kind: screen
+    source: public/cashier.html
+    screenshots: [screens/DS-kt-cashier.light.png, screens/DS-kt-cashier.dark.png]
+    design_ref: mocks/DS-kt-cashier.html
+    status: approved
+
+  - id: DS-kt-restaurant-monitor
+    kind: screen
+    source: public/monitor.html
+    screenshots: [screens/DS-kt-restaurant-monitor.light.png, screens/DS-kt-restaurant-monitor.dark.png]
+    design_ref: mocks/DS-kt-restaurant-monitor.html
+    status: approved
+
+  - id: DS-kt-qr-tables
+    kind: screen
+    source: public/qr-tables.html
+    screenshots: [screens/DS-kt-qr-tables.light.png, screens/DS-kt-qr-tables.dark.png]
+    design_ref: mocks/DS-kt-qr-tables.html
+    status: approved
+
+  - id: DS-kt-admin
+    kind: screen
+    source: public/admin.html
+    screenshots: [screens/DS-kt-admin.light.png, screens/DS-kt-admin.dark.png]
+    design_ref: mocks/DS-kt-admin.html
+    status: approved
+
+  # Shared Components
+  - id: DS-kt-dish-card
+    kind: component
+    source: public/components/dish-card.html
+    screenshots: [screens/DS-kt-dish-card.light.png, screens/DS-kt-dish-card.dark.png]
+    design_ref: mocks/DS-kt-dish-card.html
+    status: approved
+
+  - id: DS-kt-order-ticket
+    kind: component
+    source: public/components/order-ticket.html
+    screenshots: [screens/DS-kt-order-ticket.light.png, screens/DS-kt-order-ticket.dark.png]
+    design_ref: mocks/DS-kt-order-ticket.html
+    status: approved
+
+  - id: DS-kt-table-badge
+    kind: component
+    source: public/components/table-badge.html
+    screenshots: [screens/DS-kt-table-badge.light.png, screens/DS-kt-table-badge.dark.png]
+    design_ref: mocks/DS-kt-table-badge.html
+    status: approved

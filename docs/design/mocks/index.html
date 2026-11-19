@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kon Tiki — Design Board & Figma Frames Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #faf8f5;
+      --color-surface: #ffffff;
+      --color-surface-subtle: #f2eee9;
+      --color-border: #e2dcd4;
+      --color-text: #241e19;
+      --color-text-muted: #6e645a;
+      --color-primary: #8c3a1e;
+      --color-primary-hover: #732f18;
+      --color-secondary: #4a5548;
+      --color-accent: #c97a2b;
+      --color-success: #2d6a4f;
+      --color-warning: #b45309;
+      --color-danger: #b91c1c;
+
+      --font-heading: 'Merriweather', Georgia, serif;
+      --font-subheading: 'Merriweather', Georgia, serif;
+      --font-sans: 'Inter', system-ui, sans-serif;
+
+      --space-xs: 8px;
+      --space-sm: 12px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+
+      --shadow-card: 0 2px 8px rgba(36, 30, 25, 0.06);
+    }
+    [data-theme="dark"] {
+      --color-bg: #181614;
+      --color-surface: #23201d;
+      --color-surface-subtle: #2d2925;
+      --color-border: #3d3731;
+      --color-text: #f4eee7;
+      --color-text-muted: #aba095;
+      --color-primary: #e07a52;
+      --color-primary-hover: #ea8e69;
+      --color-secondary: #889c84;
+      --color-accent: #df9547;
+      --color-success: #52b788;
+      --color-warning: #fbbf24;
+      --color-danger: #f87171;
+      --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      padding: var(--space-xl);
+    }
+    header {
+      border-bottom: 2px solid var(--color-primary);
+      padding-bottom: var(--space-md);
+      margin-bottom: var(--space-xl);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    h1 {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      color: var(--color-primary);
+    }
+    .theme-btn {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: var(--space-lg);
+    }
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .card-title {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .card-meta {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+    }
+    .btn-open {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: var(--color-primary);
+      color: #fff;
+      text-decoration: none;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 13px;
+      margin-top: auto;
+    }
+    .btn-open:hover { background: var(--color-primary-hover); }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Restaurant Kon Tiki — Registru Design & Figma Frames</h1>
+      <p style="color: var(--color-text-muted); margin-top: 4px;">Toate ecranele și componentele desenate conform token-urilor aprobate în DESIGN.md.</p>
+    </div>
+    <button class="theme-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='light'?'dark':'light')">Mod Luminos / Întunecat</button>
+  </header>
+
+  <h2 style="font-family: var(--font-heading); font-size: 20px; margin-bottom: var(--space-md);">1. Ecrane Aplicație (`kind: screen`)</h2>
+  <div class="grid">
+    
+    <div class="card">
+      <div style="display: flex; justify-content: space-between;">
+        <span class="badge">Mobile (320-767px)</span>
+        <span class="badge" style="color: var(--color-success); border-color: var(--color-success);">Approved</span>
+      </div>
+      <h3 class="card-title">DS-kt-client-menu · Meniu Digital Client</h3>
+      <p class="card-meta">Meniu accesibil la masă prin QR, categorii preparate, stoc live ingrediente, badge-uri alergeni, opțiuni extra.</p>
+      <a href="DS-kt-client-menu.html" target="_blank" class="btn-open">Deschide Mock HTML ↗</a>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; justify-content: space-between;">
+        <span class="badge">Mobile (320-767px)</span>
+        <span class="badge" style="color: var(--color-success); border-color: var(--color-success);">Approved</span>
+      </div>
+      <h3 class="card-title">DS-kt-order-status · Stadiul Comenzii la Masă</h3>
+      <p class="card-meta">Urmărire în timp real via SSE a stadiului: plasată ➔ în preparare ➔ gata de servire la masă.</p>
+      <a href="DS-kt-order-status.html" target="_blank" class="btn-open">Deschide Mock HTML ↗</a>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; justify-content: space-between;">
+        <span class="badge">Tablet (768-1024px)</span>
+        <span class="badge" style="color: var(--color-success); border-color: var(--color-success);">Approved</span>
+      </div>
+      <h3 class="card-title">DS-kt-waiter-orders · Preluare Comenzi Ospătar</h3>
+      <p class="card-meta">Selector 12 mese, catalog rapid cu validare stoc, configurator opțiuni extra (smântână, ardei) și transmitere KDS.</p>
+      <a href="DS-kt-waiter-orders.html" target="_blank" class="btn-open">Deschide Mock HTML ↗</a>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; justify-content: space-between;">
+        <span class="badge">Desktop (≥1025px)</span>
+        <span class="badge" style="color: var(--color-success); border-color: var(--color-success);">Approved</span>
+      </div>
+      <h3 class="card-title">DS-kt-kds · Kitchen Display System</h3>
+      <p class="card-meta">Panou bucătărie în timp real, tichete comenzi cu cronometru, alertă vizuală comenzi întârziate (>10 min), marcare „Gata”.</p>
+      <a href="DS-kt-kds.html" target="_blank" class="btn-open">Deschide Mock HTML ↗</a>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; justify-content: space-between;">
+        <span class="badge">Tablet / Desktop</span>
+        <span class="badge" style="color: var(--color-success); border-color: var(--color-success);">Approved</span>
+      </div>
+      <h3 class="card-title">DS-kt-cashier · Ecran Casă / Încasare</h3>
+      <p class="card-meta">Total consumație autoritar server, plată POS fizic / numerar, emitere bon fiscal PDF și eliberare masă.</p>
+      <a href="DS-kt-cashier.html" target="_blank" class="btn-open">Deschide Mock HTML ↗</a>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; justify-content: space-between;">
+        <span class="badge">Desktop (≥1025px)</span>
+        <span class="badge" style="color: var(--color-success); border-color: var(--color-success);">Approved</span>
+      </div>
+      <h3 class="card-title">DS-kt-restaurant-monitor · Monitor Central Restaurant</h3>
+      <p class="card-meta">Tablou central în sală: starea celor 12 mese (libere, în lucru, gata de servire) pentru coordonarea personalului.</p>
+      <a href="DS-kt-restaurant-monitor.html" target="_blank" class="btn-open">Deschide Mock HTML ↗</a>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; justify-content: space-between;">
+        <span class="badge">Print / A4</span>
+        <span class="badge" style="color: var(--color-success); border-color: var(--color-success);">Approved</span>
+      </div>
+      <h3 class="card-title">DS-kt-qr-tables · Printare Coduri QR Mese</h3>
+      <p class="card-meta">Format vectorial și machetare printabilă A4 a standurilor de masă cu coduri QR pentru mesele 1–12.</p>
+      <a href="DS-kt-qr-tables.html" target="_blank" class="btn-open">Deschide Mock HTML ↗</a>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; justify-content: space-between;">
+        <span class="badge">Desktop</span>
+        <span class="badge" style="color: var(--color-success); border-color: var(--color-success);">Approved</span>
+      </div>
+      <h3 class="card-title">DS-kt-admin · Ecran Administrare & Stocuri</h3>
+      <p class="card-meta">Panou de gestiune stocuri ingrediente, aprovizionare rapidă, configurare rețete și monitorizare praguri critice (Q-003).</p>
+      <a href="DS-kt-admin.html" target="_blank" class="btn-open">Deschide Mock HTML ↗</a>
+    </div>
+
+  </div>
+
+  <h2 style="font-family: var(--font-heading); font-size: 20px; margin-top: var(--space-xl); margin-bottom: var(--space-md);">2. Componente Partajate (`kind: component`)</h2>
+  <div class="grid">
+    <div class="card">
+      <h3 class="card-title">DS-kt-dish-card · Card Preparat</h3>
+      <p class="card-meta">Componentă reutilizabilă pentru afișarea preparatelor, alergenilor și prețului.</p>
+      <a href="DS-kt-dish-card.html" target="_blank" class="btn-open">Deschide Mock HTML ↗</a>
+    </div>
+    <div class="card">
+      <h3 class="card-title">DS-kt-order-ticket · Tichet Comandă</h3>
+      <p class="card-meta">Tichet comandă cu cronometru și status întârziat pentru bucătărie.</p>
+      <a href="DS-kt-order-ticket.html" target="_blank" class="btn-open">Deschide Mock HTML ↗</a>
+    </div>
+    <div class="card">
+      <h3 class="card-title">DS-kt-table-badge · Indicator Masă</h3>
+      <p class="card-meta">Badge selector rotunjit pentru starea meselor 1–12 (liber, ocupat, rezervat).</p>
+      <a href="DS-kt-table-badge.html" target="_blank" class="btn-open">Deschide Mock HTML ↗</a>
+    </div>
+  </div>
+</body>
+</html>

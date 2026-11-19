@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Standuri QR Mese 1–12 · Restaurant Kon Tiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+  <style>
+    .qr-page-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-md);
+    }
+    .print-controls-bar {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin-bottom: var(--space-lg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-card);
+    }
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+    }
+    @media (max-width: 900px) {
+      .qr-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .qr-grid { grid-template-columns: 1fr; }
+    }
+    .qr-stand-card {
+      background: #ffffff;
+      color: #241e19;
+      border: 2px solid #8c3a1e;
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: var(--shadow-card);
+      page-break-inside: avoid;
+    }
+    .stand-header {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      color: #8c3a1e;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 2px;
+    }
+    .table-number-banner {
+      font-family: var(--font-heading);
+      font-size: 26px;
+      font-weight: 700;
+      color: #241e19;
+      margin-bottom: var(--space-sm);
+    }
+    .qr-image-wrapper {
+      padding: var(--space-sm);
+      background: #faf8f5;
+      border: 1px dashed #8c3a1e;
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-sm);
+    }
+    .qr-img {
+      width: 180px;
+      height: 180px;
+      display: block;
+    }
+    .scan-hint {
+      font-size: 12px;
+      color: #6e645a;
+      line-height: 1.4;
+      max-width: 220px;
+    }
+
+    /* Print Styles */
+    @media print {
+      body { background: #fff !important; padding: 0 !important; }
+      .top-navbar, .print-controls-bar { display: none !important; }
+      .qr-page-container { max-width: 100% !important; padding: 0 !important; }
+      .qr-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+      }
+      .qr-stand-card {
+        box-shadow: none !important;
+        border: 2px solid #000 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <nav class="top-navbar">
+    <div style="display:flex; align-items:center; gap:var(--space-md);">
+      <a href="/" class="brand-title">🍲 Restaurant Kon Tiki</a>
+      <span class="badge badge-info">Standuri QR Mese</span>
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Hub</a>
+      <a href="/client-menu.html?masa=1" class="nav-link">Meniu</a>
+      <a href="/waiter.html" class="nav-link">Ospătar</a>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută tema">
+        <span id="theme-toggle-label">🌙 Temă</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="qr-page-container">
+
+    <div class="print-controls-bar">
+      <div>
+        <h1 style="font-family: var(--font-heading); font-size: 18px; color: var(--color-primary); margin-bottom: 2px;">
+          Standuri Mese 1 – 12 (Generare Server-Side D-005)
+        </h1>
+        <div style="font-size: 13px; color: var(--color-text-muted);">
+          Format optimizat pentru tăiat și așezat pe standurile fizice din sală.
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="window.print()">
+        🖨️ Tipărește Standurile (Print A4)
+      </button>
+    </div>
+
+    <div class="qr-grid" id="qr-grid-container">
+      <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--color-text-muted);">
+        Se generează codurile QR server-side pentru cele 12 mese...
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    async function loadAllQRs() {
+      try {
+        const res = await fetch('/api/qr-all');
+        const data = await res.json();
+        const container = document.getElementById('qr-grid-container');
+
+        if (!data.success || !data.qr_codes) {
+          container.innerHTML = '<div style="grid-column:1/-1; color:var(--color-danger); text-align:center;">Eroare la generarea codurilor QR.</div>';
+          return;
+        }
+
+        container.innerHTML = '';
+        for (const item of data.qr_codes) {
+          const card = document.createElement('div');
+          card.className = 'qr-stand-card';
+          card.innerHTML = `
+            <div class="stand-header">Restaurant Kon Tiki</div>
+            <div class="table-number-banner">MASA ${item.table_number}</div>
+            <div class="qr-image-wrapper">
+              <img src="${item.qr_data_url}" alt="QR Masa ${item.table_number}" class="qr-img">
+            </div>
+            <div class="scan-hint">
+              Scanați cu camera telefonului pentru <strong>Meniul Digital</strong> și stadiul preparării în timp real.
+            </div>
+            <div style="font-size: 10px; color: #8c3a1e; margin-top: 8px;">
+              ${item.url}
+            </div>
+          `;
+          container.appendChild(card);
+        }
+      } catch (err) {
+        console.error('Eroare coduri QR:', err);
+      }
+    }
+
+    loadAllQRs();
+  </script>
+</body>
+</html>

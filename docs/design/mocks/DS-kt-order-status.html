@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DS-kt-order-status · Stadiul Comenzii la Masă</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #faf8f5;
+      --color-surface: #ffffff;
+      --color-surface-subtle: #f2eee9;
+      --color-border: #e2dcd4;
+      --color-text: #241e19;
+      --color-text-muted: #6e645a;
+      --color-primary: #8c3a1e;
+      --color-primary-hover: #732f18;
+      --color-secondary: #4a5548;
+      --color-accent: #c97a2b;
+      --color-success: #2d6a4f;
+      --color-warning: #b45309;
+      --color-danger: #b91c1c;
+
+      --font-heading: 'Merriweather', Georgia, serif;
+      --font-subheading: 'Merriweather', Georgia, serif;
+      --font-dish-title: 'Merriweather', Georgia, serif;
+      --font-sans: 'Inter', system-ui, sans-serif;
+
+      --space-2xs: 4px;
+      --space-xs: 8px;
+      --space-sm: 12px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+
+      --shadow-card: 0 2px 8px rgba(36, 30, 25, 0.06);
+      --shadow-modal: 0 12px 28px rgba(36, 30, 25, 0.16);
+      --transition-fast: 150ms ease-in-out;
+    }
+
+    [data-theme="dark"] {
+      --color-bg: #181614;
+      --color-surface: #23201d;
+      --color-surface-subtle: #2d2925;
+      --color-border: #3d3731;
+      --color-text: #f4eee7;
+      --color-text-muted: #aba095;
+      --color-primary: #e07a52;
+      --color-primary-hover: #ea8e69;
+      --color-secondary: #889c84;
+      --color-accent: #df9547;
+      --color-success: #52b788;
+      --color-warning: #fbbf24;
+      --color-danger: #f87171;
+      --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.35);
+      --shadow-modal: 0 12px 28px rgba(0, 0, 0, 0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-md);
+      min-height: 100vh;
+    }
+
+    /* Frame Bar for Figma Inspection */
+    .figma-frame-header {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-md);
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+    .figma-tag {
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .theme-toggle-btn {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--color-text);
+      min-height: 28px;
+    }
+
+    /* Device Container: Mobile (375-412px) */
+    .device-viewport {
+      width: 100%;
+      max-width: 412px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 820px;
+    }
+
+    .app-header {
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .back-btn {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 44px;
+    }
+    .header-title {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .status-body {
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+
+    /* Live Status Banner */
+    .status-banner {
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+    .pulse-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-success);
+      margin-bottom: var(--space-2xs);
+    }
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-success);
+      box-shadow: 0 0 0 0 rgba(45, 106, 79, 0.7);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(45, 106, 79, 0.6); }
+      70% { box-shadow: 0 0 0 8px rgba(45, 106, 79, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(45, 106, 79, 0); }
+    }
+    .status-highlight {
+      font-family: var(--font-subheading);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .status-subtext {
+      font-size: 14px;
+      color: var(--color-text-muted);
+    }
+
+    /* Stepper */
+    .timeline-stepper {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      padding: var(--space-xs) 0;
+      position: relative;
+    }
+    .timeline-step {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      position: relative;
+    }
+    .step-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--color-surface-subtle);
+      border: 2px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      flex-shrink: 0;
+      z-index: 2;
+    }
+    .timeline-step.completed .step-icon {
+      background: var(--color-success);
+      border-color: var(--color-success);
+      color: #ffffff;
+    }
+    .timeline-step.active .step-icon {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(140, 58, 30, 0.18);
+    }
+    .step-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .step-title {
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .step-desc {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    /* Order Summary Card */
+    .order-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .order-card-title {
+      font-family: var(--font-subheading);
+      font-size: 16px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-xs);
+      display: flex;
+      justify-content: space-between;
+    }
+    .order-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      font-size: 14px;
+    }
+    .item-extras {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+    .order-total-row {
+      border-top: 1px dashed var(--color-border);
+      padding-top: var(--space-xs);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-weight: 700;
+    }
+    .total-price {
+      font-size: 18px;
+      color: var(--color-primary);
+    }
+    .server-calc-note {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Figma Frame Identifier -->
+  <div class="figma-frame-header">
+    <span>Frame: <span class="figma-tag">DS-kt-order-status · Stadiul Comenzii la Masă</span></span>
+    <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută modul vizual">Mod Luminos / Întunecat</button>
+  </div>
+
+  <div class="device-viewport">
+    
+    <header class="app-header">
+      <a href="DS-kt-client-menu.html" class="back-btn">
+        <span aria-hidden="true">←</span> Înapoi la Meniu
+      </a>
+      <h1 class="header-title">Stadiu Comandă</h1>
+      <span style="font-size: 13px; font-weight: 600; color: var(--color-text-muted);">Masa 4</span>
+    </header>
+
+    <main class="status-body">
+      
+      <!-- Live Status Banner -->
+      <section class="status-banner">
+        <div class="pulse-indicator">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          <span>Actualizare în timp real (SSE activ)</span>
+        </div>
+        <div class="status-highlight">În preparare la bucătărie</div>
+        <div class="status-subtext">Bucătăria lucrează la comanda dumneavoastră. Timp scurs: <strong>06:40 min</strong></div>
+      </section>
+
+      <!-- Stepper Flux Comanda -->
+      <section class="timeline-stepper" aria-label="Etape comandă">
+        
+        <div class="timeline-step completed">
+          <div class="step-icon" aria-label="Pas finalizat">✓</div>
+          <div class="step-info">
+            <div class="step-title">1. Comandă Plasată & Confirmată</div>
+            <div class="step-desc">Preluată de ospătar la ora 12:45 • Transmisă instant bucătăriei</div>
+          </div>
+        </div>
+
+        <div class="timeline-step active">
+          <div class="step-icon" aria-label="Pas în derulare">2</div>
+          <div class="step-info">
+            <div class="step-title">2. În Preparare (Bucătărie)</div>
+            <div class="step-desc">Tichetele se gătesc pe stația caldă • Cronometru KDS activ</div>
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="step-icon">3</div>
+          <div class="step-info">
+            <div class="step-title">3. Gata de Servire</div>
+            <div class="step-desc">Ospătarul va aduce comanda fierbinte direct la Masa 4</div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Detaliu Comanda -->
+      <section class="order-card">
+        <div class="order-card-title">
+          <span>Comanda #104</span>
+          <span style="font-size: 12px; color: var(--color-text-muted);">18 Nov, 12:45</span>
+        </div>
+
+        <div class="order-item-row">
+          <div>
+            <strong>1x Ciorbă de burtă</strong>
+            <div class="item-extras">+ Extra: 1 cupă smântână, ardei murați suplimentari</div>
+          </div>
+          <span>28,00 lei</span>
+        </div>
+
+        <div class="order-item-row">
+          <div>
+            <strong>1x Cartofi cu brânză rasă</strong>
+            <div class="item-extras">Porție standard (Mărginimea Sibiului)</div>
+          </div>
+          <span>16,00 lei</span>
+        </div>
+
+        <div class="order-total-row">
+          <span>Total autoritar:</span>
+          <span class="total-price">44,00 lei</span>
+        </div>
+        <div class="server-calc-note">Calcul autoritar securizat pe server • Plata se face la casier</div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+    }
+  </script>
+</body>
+</html>

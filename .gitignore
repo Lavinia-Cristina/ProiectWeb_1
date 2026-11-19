@@ -9,3 +9,15 @@
 !.agents/skills/
 !.agents/agents/
 .agents/worktrees/
+
+# Node.js
+node_modules/
+npm-debug.log*
+
+# Database & generated receipts
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+data/receipts/*.pdf
+

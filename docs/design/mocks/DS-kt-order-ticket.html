@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DS-kt-order-ticket · Tichet Comandă</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #faf8f5;
+      --color-surface: #ffffff;
+      --color-surface-subtle: #f2eee9;
+      --color-border: #e2dcd4;
+      --color-text: #241e19;
+      --color-text-muted: #6e645a;
+      --color-primary: #8c3a1e;
+      --color-warning: #b45309;
+      --color-success: #2d6a4f;
+      --font-heading: 'Merriweather', Georgia, serif;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --space-xs: 8px;
+      --space-sm: 12px;
+      --space-md: 16px;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --shadow-card: 0 2px 8px rgba(36, 30, 25, 0.06);
+    }
+    [data-theme="dark"] {
+      --color-bg: #181614;
+      --color-surface: #23201d;
+      --color-surface-subtle: #2d2925;
+      --color-border: #3d3731;
+      --color-text: #f4eee7;
+      --color-text-muted: #aba095;
+      --color-primary: #e07a52;
+      --color-warning: #fbbf24;
+      --color-success: #52b788;
+      --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .figma-header {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+    }
+    .ticket-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--color-surface);
+      border: 2px solid var(--color-warning);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .card-head {
+      background: rgba(180, 83, 9, 0.12);
+      padding: var(--space-xs) var(--space-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--color-warning);
+    }
+    .card-body { padding: var(--space-md); display: flex; flex-direction: column; gap: var(--space-xs); }
+    .card-footer { padding: var(--space-xs) var(--space-sm); background: var(--color-surface-subtle); border-top: 1px solid var(--color-border); display: flex; }
+    .btn-act { flex: 1; background: var(--color-success); color: #fff; border: none; padding: 8px; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="figma-header">
+    <span>Frame: <strong style="color: var(--color-primary);">DS-kt-order-ticket · Tichet Comandă</strong></span>
+    <button onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='light'?'dark':'light')">Comută Temă</button>
+  </div>
+  <article class="ticket-card">
+    <div class="card-head">
+      <span style="font-family: var(--font-heading); font-weight: 700;">MASA 2 • #102</span>
+      <span style="font-size: 12px; font-weight: 700; color: var(--color-warning);">⚠️ 12:45 min (Întârziată)</span>
+    </div>
+    <div class="card-body">
+      <div>
+        <strong>2x Ciorbă de burtă</strong>
+        <div style="font-size: 12px; color: var(--color-text-muted);">+ Extra: 2 cupe smântână suplimentară, ardei murați</div>
+      </div>
+      <div>
+        <strong>1x Coșuleț pâine de casă</strong>
+      </div>
+    </div>
+    <div class="card-footer">
+      <button class="btn-act">✓ Marchează Comandă Gata</button>
+    </div>
+  </article>
+</body>
+</html>

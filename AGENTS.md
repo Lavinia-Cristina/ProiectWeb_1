@@ -80,10 +80,14 @@ without new evidence. A rejected proposal is added there with the reason.
 ProiectWeb_1 is a web application repository.
 
 ## 2. Stack and commands
-Web application (stack to be defined; see Q-001).
+Node.js (>= 18) cu Express, SQLite, Server-Sent Events / WebSocket, `qrcode` și `pdfkit` (vezi D-001, D-002, D-004, D-005, D-006).
 
 ```bash
-# Commands to be configured once project stack is chosen (see Q-001)
+npm install               # Instalare dependențe de producție și dezvoltare
+npm run seed              # Populare bază de date SQLite cu datele de start Kon Tiki (mese, ingrediente, rețete)
+npm start                 # Pornire server Express (port implicit 3000)
+npm test                  # Teste automate integrate (anti-manipulare preț server, scădere atomică stoc)
+node scripts/capture.js   # Capturi automate ecrane (light / dark) pentru docs/design/screens/
 ```
 
 ## 3. Layout

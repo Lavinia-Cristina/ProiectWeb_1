@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DS-kt-table-badge · Indicator Masă</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #faf8f5;
+      --color-surface: #ffffff;
+      --color-surface-subtle: #f2eee9;
+      --color-border: #e2dcd4;
+      --color-text: #241e19;
+      --color-primary: #8c3a1e;
+      --color-success: #2d6a4f;
+      --color-accent: #c97a2b;
+      --color-secondary: #4a5548;
+      --radius-md: 8px;
+    }
+    [data-theme="dark"] {
+      --color-bg: #181614;
+      --color-surface: #23201d;
+      --color-surface-subtle: #2d2925;
+      --color-border: #3d3731;
+      --color-text: #f4eee7;
+      --color-primary: #e07a52;
+      --color-success: #52b788;
+      --color-accent: #df9547;
+      --color-secondary: #889c84;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: 'Inter', system-ui, sans-serif;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .figma-header {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+    }
+    .badges-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      min-width: 60px;
+      height: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 8px;
+    }
+    .badge.free { border-left: 3px solid var(--color-success); }
+    .badge.occupied { border-left: 3px solid var(--color-accent); }
+    .badge.reserved { border-left: 3px solid var(--color-secondary); }
+    .badge.selected { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+    .status-text { font-size: 10px; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="figma-header">
+    <span>Frame: <strong style="color: var(--color-primary);">DS-kt-table-badge · Indicator Masă</strong></span>
+    <button onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='light'?'dark':'light')">Comută Temă</button>
+  </div>
+  <div class="badges-row">
+    <div class="badge free"><span>M1</span><span class="status-text">Liber</span></div>
+    <div class="badge occupied"><span>M2</span><span class="status-text">Ocupat</span></div>
+    <div class="badge reserved"><span>M3</span><span class="status-text">Rezervat</span></div>
+    <div class="badge selected"><span>M4</span><span class="status-text">Activ</span></div>
+  </div>
+</body>
+</html>

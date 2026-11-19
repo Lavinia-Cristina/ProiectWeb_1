@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Preluare Comenzi Ospătar · Restaurant Kon Tiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+  <style>
+    .waiter-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    /* Selector Mese 1-12 */
+    .tables-bar {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-card);
+    }
+    .tables-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      margin-bottom: var(--space-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tables-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: var(--space-xs);
+    }
+    .table-btn {
+      background: var(--color-surface-subtle);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-sm) var(--space-xs);
+      cursor: pointer;
+      text-align: center;
+      transition: all var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .table-btn.active {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px var(--color-primary);
+    }
+    .table-btn .num {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--color-text);
+    }
+    .table-btn .st-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+    }
+    .st-libera { background: #e8f5e9; color: var(--color-success); }
+    .st-ocupata { background: #fef3c7; color: var(--color-warning); }
+    .st-rezervata { background: #e0f2fe; color: #0284c7; }
+    [data-theme="dark"] .st-libera { background: #1a3821; color: #52b788; }
+    [data-theme="dark"] .st-ocupata { background: #3b2d11; color: #fbbf24; }
+    [data-theme="dark"] .st-rezervata { background: #12334d; color: #38bdf8; }
+
+    /* Panou Principal */
+    .main-workspace {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+    @media (max-width: 900px) {
+      .main-workspace { grid-template-columns: 1fr; }
+    }
+    .panel-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .panel-title {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      color: var(--color-primary);
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-xs);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .form-select, .form-input {
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-size: 14px;
+      font-family: inherit;
+    }
+    /* Selector Extras */
+    .extras-selector {
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-sm);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+    .extra-item-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    /* Coș de comandă */
+    .draft-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .draft-table th {
+      text-align: left;
+      padding: 8px 6px;
+      border-bottom: 2px solid var(--color-border);
+      color: var(--color-text-muted);
+    }
+    .draft-table td {
+      padding: 8px 6px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .del-btn {
+      color: var(--color-danger);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <nav class="top-navbar">
+    <div style="display: flex; align-items: center; gap: var(--space-md);">
+      <a href="/" class="brand-title">🍲 Restaurant Kon Tiki</a>
+      <span class="badge badge-info">Ecran Ospătar</span>
+    </div>
+    <div class="nav-links">
+      <span id="sse-status-badge" class="badge badge-warning">○ Conectare...</span>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută tema">
+        <span id="theme-toggle-label">🌙 Temă</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="waiter-container">
+
+    <!-- Selector Mese 1-12 -->
+    <div class="tables-bar">
+      <div class="tables-title">
+        <span>Selectează Masa pentru Operare (1 - 12)</span>
+        <span id="selected-table-banner" style="color:var(--color-primary); font-weight:700;">Masa 1 selectată</span>
+      </div>
+      <div class="tables-grid" id="tables-grid-container">
+        <!-- Generat dinamic -->
+      </div>
+    </div>
+
+    <!-- Main Workspace: Formular Preluare Comandă + Comenzi Active -->
+    <div class="main-workspace">
+
+      <!-- Panou Stânga: Formular Adăugare Preparate în Comandă -->
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>Preluare Comandă Nouă</span>
+          <div style="display: flex; gap: 4px;">
+            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="setTableStatus('liberă')">Liberă</button>
+            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="setTableStatus('ocupată')">Ocupată</button>
+            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="setTableStatus('rezervată')">Rezervată</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="dish-select">Alege Preparatul din Meniu:</label>
+          <select id="dish-select" class="form-select" onchange="updateSelectedDishPreview()">
+            <!-- Populat din /api/menu -->
+          </select>
+        </div>
+
+        <div class="form-group" style="flex-direction: row; gap: var(--space-md); align-items: center;">
+          <div style="flex: 1;">
+            <label class="form-label" for="qty-input">Cantitate (porții):</label>
+            <input type="number" id="qty-input" class="form-input" value="1" min="1" max="10">
+          </div>
+          <div style="flex: 1;">
+            <label class="form-label">Preț & Gramaj autoritar:</label>
+            <div id="dish-price-display" style="font-size: 18px; font-weight: 700; color: var(--color-primary); margin-top: 6px;">0,00 lei</div>
+            <div id="dish-weight-display" style="font-size: 12px; color: var(--color-text-muted); margin-top: 2px;"></div>
+            <div id="dish-allergens-display" style="font-size: 11px; color: #8c3a1e; margin-top: 2px;"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Opțiuni Extra Disponibile (consumă stoc):</label>
+          <div class="extras-selector" id="extras-container">
+            <!-- Populat dinamic din /api/extras -->
+          </div>
+        </div>
+
+        <button class="btn btn-secondary" onclick="addItemToDraft()">
+          + Adaugă în Comanda Mesei
+        </button>
+
+        <!-- Coș de comandă curentă -->
+        <div style="border-top: 1px solid var(--color-border); padding-top: var(--space-sm);">
+          <div style="font-size: 14px; font-weight: 700; margin-bottom: 6px;">Articole în comanda curentă:</div>
+          <table class="draft-table">
+            <thead>
+              <tr>
+                <th>Articol & Extra</th>
+                <th>Cant.</th>
+                <th>Preț</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="draft-tbody">
+              <tr><td colspan="4" style="text-align:center; color:var(--color-text-muted);">Niciun articol adăugat încă.</td></tr>
+            </tbody>
+          </table>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-sm); font-size: 16px; font-weight: 700;">
+            <span>Subtotal autoritar server:</span>
+            <span id="draft-total-display" style="color:var(--color-primary);">0,00 lei</span>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%; margin-top: var(--space-md); padding: 12px;" onclick="submitOrderToKitchen()">
+            🚀 Trimite Instant Comanda la Bucătărie
+          </button>
+        </div>
+      </div>
+
+      <!-- Panou Dreapta: Comenzi Active pe Masa Selectată -->
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>Comenzi Active pe Masa Selectată</span>
+          <span id="active-orders-count-badge" class="badge badge-info">0 active</span>
+        </div>
+
+        <div id="table-orders-container" style="display: flex; flex-direction: column; gap: var(--space-sm);">
+          <div style="color:var(--color-text-muted); font-size:13px; text-align:center; padding: 20px;">
+            Selectați o masă pentru a vedea stadiul comenzilor.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    let currentTable = 1;
+    let tablesData = [];
+    let menuData = [];
+    let extrasData = [];
+    let draftItems = [];
+
+    async function initWaiter() {
+      await Promise.all([loadTables(), loadMenu(), loadExtras()]);
+      selectSubtable(1);
+    }
+
+    async function loadTables() {
+      try {
+        const res = await fetch('/api/tables');
+        const data = await res.json();
+        if (data.success) {
+          tablesData = data.tables;
+          renderTablesGrid();
+        }
+      } catch (err) {
+        console.error('Eroare mese:', err);
+      }
+    }
+
+    async function loadMenu() {
+      try {
+        const res = await fetch('/api/menu');
+        const data = await res.json();
+        if (data.success) {
+          menuData = data.menu;
+          const select = document.getElementById('dish-select');
+          select.innerHTML = '';
+
+          // Grupare pe categorii în optgroup
+          const byCat = {};
+          for (const d of menuData) {
+            if (!byCat[d.category]) byCat[d.category] = [];
+            byCat[d.category].push(d);
+          }
+
+          for (const [catName, list] of Object.entries(byCat)) {
+            const group = document.createElement('optgroup');
+            group.label = catName;
+            for (const d of list) {
+              const opt = document.createElement('option');
+              opt.value = d.id;
+              const weightStr = d.weight ? ` [${d.weight}]` : '';
+              const allergensStr = (d.allergens && d.allergens.length > 0) ? ` (Alergeni: ${d.allergens.join(',')})` : '';
+              opt.textContent = `${d.name}${weightStr} - ${Number(d.price).toFixed(2)} lei${allergensStr} ${d.is_available ? '' : '[STOC EPUIZAT]'}`;
+              opt.disabled = !d.is_available;
+              group.appendChild(opt);
+            }
+            select.appendChild(group);
+          }
+          updateSelectedDishPreview();
+        }
+      } catch (err) {
+        console.error('Eroare meniu:', err);
+      }
+    }
+
+    async function loadExtras() {
+      try {
+        const res = await fetch('/api/extras');
+        const data = await res.json();
+        if (data.success) {
+          extrasData = data.extras;
+          const container = document.getElementById('extras-container');
+          container.innerHTML = '';
+          for (const ex of extrasData) {
+            const label = document.createElement('label');
+            label.className = 'extra-item-check';
+            label.innerHTML = `
+              <input type="checkbox" value="${ex.id}" data-price="${ex.price}">
+              <span>${ex.name} (+${Number(ex.price).toFixed(2)} lei)</span>
+            `;
+            container.appendChild(label);
+          }
+        }
+      } catch (err) {
+        console.error('Eroare extra:', err);
+      }
+    }
+
+    function renderTablesGrid() {
+      const container = document.getElementById('tables-grid-container');
+      container.innerHTML = '';
+      for (const t of tablesData) {
+        const btn = document.createElement('div');
+        btn.className = `table-btn ${t.table_number === currentTable ? 'active' : ''}`;
+        btn.onclick = () => selectSubtable(t.table_number);
+
+        let badgeClass = 'st-libera';
+        if (t.status === 'ocupată') badgeClass = 'st-ocupata';
+        if (t.status === 'rezervată') badgeClass = 'st-rezervata';
+
+        btn.innerHTML = `
+          <div class="num">Masa ${t.table_number}</div>
+          <div class="st-badge ${badgeClass}">${t.status}</div>
+        `;
+        container.appendChild(btn);
+      }
+    }
+
+    function selectSubtable(tableNum) {
+      currentTable = tableNum;
+      document.getElementById('selected-table-banner').textContent = `Masa ${currentTable} selectată`;
+      renderTablesGrid();
+      loadTableActiveOrders();
+    }
+
+    function updateSelectedDishPreview() {
+      const select = document.getElementById('dish-select');
+      const selectedId = select.value;
+      const dish = menuData.find(d => d.id === selectedId);
+      if (dish) {
+        document.getElementById('dish-price-display').textContent = `${Number(dish.price).toFixed(2).replace('.', ',')} lei`;
+        document.getElementById('dish-weight-display').textContent = dish.weight ? `⚖️ Gramaj: ${dish.weight}` : '';
+        const allergensList = (dish.allergens && dish.allergens.length > 0) ? `⚠️ Alergeni: grupele ${dish.allergens.join(', ')}` : '✓ Fără alergeni majori';
+        document.getElementById('dish-allergens-display').textContent = allergensList;
+      }
+    }
+
+    function addItemToDraft() {
+      const select = document.getElementById('dish-select');
+      const dishId = select.value;
+      const dish = menuData.find(d => d.id === dishId);
+      if (!dish) return;
+
+      const qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
+
+      // Selectează extras bifate
+      const selectedExtras = [];
+      document.querySelectorAll('#extras-container input:checked').forEach(chk => {
+        const ex = extrasData.find(e => e.id === chk.value);
+        if (ex) selectedExtras.push(ex);
+      });
+
+      draftItems.push({
+        dish_id: dish.id,
+        name: dish.name,
+        price: dish.price,
+        quantity: qty,
+        extras: selectedExtras
+      });
+
+      // Reset extras checkboxes
+      document.querySelectorAll('#extras-container input:checked').forEach(c => c.checked = false);
+      renderDraftTable();
+    }
+
+    function removeDraftItem(index) {
+      draftItems.splice(index, 1);
+      renderDraftTable();
+    }
+
+    function renderDraftTable() {
+      const tbody = document.getElementById('draft-tbody');
+      const totalSpan = document.getElementById('draft-total-display');
+
+      if (draftItems.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--color-text-muted);">Niciun articol adăugat încă.</td></tr>';
+        totalSpan.textContent = '0,00 lei';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      let total = 0;
+
+      draftItems.forEach((it, idx) => {
+        let itemSum = it.price * it.quantity;
+        let extrasNames = '';
+        if (it.extras && it.extras.length > 0) {
+          extrasNames = '<br><span style="font-size:11px; color:var(--color-text-muted);">' + 
+            it.extras.map(e => `+ ${e.name} (${Number(e.price).toFixed(2)} lei)`).join(', ') + '</span>';
+          for (const ex of it.extras) {
+            itemSum += ex.price * it.quantity;
+          }
+        }
+        total += itemSum;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${it.name}</strong>${extrasNames}</td>
+          <td>${it.quantity}</td>
+          <td>${itemSum.toFixed(2)} lei</td>
+          <td><button class="del-btn" onclick="removeDraftItem(${idx})" title="Șterge">✕</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      totalSpan.textContent = total.toFixed(2).replace('.', ',') + ' lei';
+    }
+
+    async function submitOrderToKitchen() {
+      if (draftItems.length === 0) {
+        showToast('Adăugați cel puțin un articol în comandă.', 'warning');
+        return;
+      }
+
+      const payload = {
+        table_number: currentTable,
+        items: draftItems.map(d => ({
+          dish_id: d.dish_id,
+          quantity: d.quantity,
+          extras: d.extras.map(e => e.id)
+        }))
+      };
+
+      try {
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✓ Comanda a fost transmisă instant la bucătărie pentru Masa ${currentTable}!`, 'success');
+          draftItems = [];
+          renderDraftTable();
+          loadTableActiveOrders();
+          loadTables();
+        } else {
+          showToast(`Eroare plasare: ${data.error}`, 'error');
+        }
+      } catch (err) {
+        showToast('Eroare rețea la transmiterea comenzii', 'error');
+      }
+    }
+
+    async function loadTableActiveOrders() {
+      try {
+        const res = await fetch(`/api/orders/table/${currentTable}`);
+        const data = await res.json();
+        const container = document.getElementById('table-orders-container');
+        const badge = document.getElementById('active-orders-count-badge');
+
+        if (!data.success || !data.orders || data.orders.length === 0) {
+          container.innerHTML = `<div style="color:var(--color-text-muted); font-size:13px; text-align:center; padding: 20px;">Nu există comenzi active pe Masa ${currentTable}.</div>`;
+          badge.textContent = '0 active';
+          return;
+        }
+
+        badge.textContent = `${data.orders.length} active`;
+        container.innerHTML = '';
+
+        for (const ord of data.orders) {
+          const card = document.createElement('div');
+          card.style.cssText = 'background:var(--color-surface-subtle); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:var(--space-md);';
+
+          const timePlaced = new Date(ord.placed_at).toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
+          const itemsText = ord.items.map(it => {
+            const exStr = (it.extras && it.extras.length > 0) ? ` (+ ${it.extras.map(e => e.name).join(', ')})` : '';
+            return `<div>• ${it.quantity}x ${it.dish_name || it.dish_id}${exStr} - ${Number(it.item_price).toFixed(2)} lei</div>`;
+          }).join('');
+
+          let actionBtn = '';
+          if (ord.status === 'gata') {
+            actionBtn = `<button class="btn btn-success" style="font-size:12px; padding:4px 8px; margin-top:8px;" onclick="markServed('${ord.id}')">✓ Confirmă Servirea la Masă</button>`;
+          }
+
+          card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-weight:700; font-size:13px;">Comandă #${ord.id.slice(-6)} (${timePlaced})</span>
+              <span class="badge ${ord.status === 'gata' ? 'badge-success' : 'badge-warning'}">${ord.status}</span>
+            </div>
+            <div style="font-size:12px; color:var(--color-text);">${itemsText}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-weight:700; font-size:13px;">
+              <span>Total autoritar: ${Number(ord.total_price).toFixed(2)} lei</span>
+              ${actionBtn}
+            </div>
+          `;
+          container.appendChild(card);
+        }
+      } catch (err) {
+        console.error('Eroare comenzi masă:', err);
+      }
+    }
+
+    async function markServed(orderId) {
+      try {
+        const res = await fetch(`/api/orders/${orderId}/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'servită' })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('✓ Comandă marcată ca servită la masă!', 'success');
+          loadTableActiveOrders();
+        }
+      } catch (err) {
+        showToast('Eroare la marcarea ca servită', 'error');
+      }
+    }
+
+    async function setTableStatus(status) {
+      try {
+        const res = await fetch(`/api/tables/${currentTable}/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Masa ${currentTable} este acum "${status}"`, 'info');
+          loadTables();
+        }
+      } catch (err) {
+        showToast('Eroare schimbare stare masă', 'error');
+      }
+    }
+
+    initWaiter();
+
+    // Actualizări SSE în timp real (D-002)
+    sseClient.on('order:new', () => { loadTables(); loadTableActiveOrders(); });
+    sseClient.on('order:status', () => { loadTables(); loadTableActiveOrders(); });
+    sseClient.on('table:status', () => loadTables());
+    sseClient.on('payment:done', () => { loadTables(); loadTableActiveOrders(); });
+  </script>
+</body>
+</html>

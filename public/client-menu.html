@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meniu Digital Complet · Restaurant Kon Tiki</title>
+  <meta name="description" content="Meniul complet al Restaurantului Kon Tiki: 93 de preparate tradiționale cu prețuri oficiale în lei, gramaje și cele 15 grupe de alergeni conform Directivei CE 2000-13 / H.G. 751/2008.">
+  <link rel="canonical" href="https://restaurantkontiki.ro/client-menu.html">
+
+  <!-- OpenGraph / Social Graph -->
+  <meta property="og:type" content="restaurant.menu">
+  <meta property="og:title" content="Meniu Digital Complet · Restaurant Kon Tiki">
+  <meta property="og:description" content="Descoperă ciorbele tradiționale, preparatele la grătar și deserturile Kon Tiki. Disponibilitate live din stoc pentru 12 mese.">
+  <meta property="og:url" content="https://restaurantkontiki.ro/client-menu.html">
+  <meta property="og:locale" content="ro_RO">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Schema.org JSON-LD: Restaurant & Menu Structured Data (pentru motoare de căutare & AI Overviews) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Menu",
+    "name": "Meniu Oficial Restaurant Kon Tiki",
+    "description": "Meniu complet cu 93 preparate, gramaje, prețuri în lei și lista celor 15 grupe de alergeni.",
+    "inLanguage": "ro",
+    "mainEntityOfPage": "https://restaurantkontiki.ro/client-menu.html",
+    "hasMenuSection": [
+      {
+        "@type": "MenuSection",
+        "name": "Ciorbe",
+        "description": "Ciorbă de burtă renumită, ciorbă de văcuță, ciorbă de fasole și pui."
+      },
+      {
+        "@type": "MenuSection",
+        "name": "Preparate Calde & Grătar",
+        "description": "Preparate tradiționale din carne de pui, vită, porc și pește proaspăt."
+      },
+      {
+        "@type": "MenuSection",
+        "name": "Garnituri & Salate",
+        "description": "Cartofi prăjiți, piure, mămăligă, salate proaspete și murături asortate."
+      },
+      {
+        "@type": "MenuSection",
+        "name": "Deserturi & Băuturi",
+        "description": "Papanași tradiționali, clătite, băuturi răcoritoare și cafea."
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-xs);
+      min-height: 100vh;
+      background: var(--color-bg);
+    }
+    .mobile-frame {
+      width: 100%;
+      max-width: 640px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-modal);
+      display: flex;
+      flex-direction: column;
+      min-height: 90vh;
+      position: relative;
+    }
+    .menu-header {
+      background: var(--color-surface-subtle);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-md);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+    .restaurant-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-xs);
+    }
+    .table-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2xs);
+      background: var(--color-primary);
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .restaurant-name {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      color: var(--color-primary);
+      line-height: 1.2;
+    }
+    .restaurant-tagline {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    /* Bara de Alergeni & Căutare */
+    .utility-bar {
+      display: flex;
+      gap: var(--space-xs);
+      margin-top: var(--space-sm);
+      flex-wrap: wrap;
+    }
+    .allergens-btn {
+      background: #fdf2e9;
+      color: #8c3a1e;
+      border: 1px solid #f0d5c2;
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition-fast);
+      flex: 1;
+      justify-content: center;
+    }
+    .allergens-btn:hover {
+      background: #fbe5d6;
+    }
+    [data-theme="dark"] .allergens-btn {
+      background: #3b2014;
+      color: #e07a52;
+      border-color: #5c3220;
+    }
+    .search-input {
+      flex: 2;
+      min-width: 160px;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    /* Categorii cu derulare orizontală */
+    .category-tabs {
+      display: flex;
+      gap: 6px;
+      padding: var(--space-xs) var(--space-md);
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      position: sticky;
+      top: 138px;
+      z-index: 80;
+    }
+    .tab-btn {
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface-subtle);
+      color: var(--color-text);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .tab-btn.active {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+
+    /* Container Meniu */
+    .menu-content {
+      padding: var(--space-md);
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .category-section-title {
+      font-family: var(--font-heading);
+      font-size: 17px;
+      color: var(--color-primary);
+      border-bottom: 2px solid var(--color-surface-subtle);
+      padding-bottom: 4px;
+      margin-top: var(--space-xs);
+    }
+
+    /* Card Preparat */
+    .dish-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all var(--transition-fast);
+    }
+    .dish-card.unavailable {
+      opacity: 0.6;
+      background: var(--color-surface-subtle);
+      border-style: dashed;
+    }
+    .dish-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--space-sm);
+    }
+    .dish-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .dish-name {
+      font-family: var(--font-dish-title);
+      font-size: 16px;
+      color: var(--color-text);
+      font-weight: 700;
+    }
+    .dish-weight-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      background: var(--color-surface-subtle);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      width: fit-content;
+      border: 1px solid var(--color-border);
+    }
+    .dish-price-box {
+      text-align: right;
+      white-space: nowrap;
+    }
+    .dish-price {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--color-primary);
+    }
+    
+    /* Alergeni row */
+    .dish-allergens-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+    .allergen-chip {
+      background: #fdf2e9;
+      color: #8c3a1e;
+      border: 1px solid #f0d5c2;
+      border-radius: var(--radius-sm);
+      font-size: 10px;
+      padding: 2px 5px;
+      font-weight: 600;
+    }
+    [data-theme="dark"] .allergen-chip {
+      background: #3b2014;
+      color: #e07a52;
+      border-color: #5c3220;
+    }
+    .allergen-inspect-btn {
+      background: none;
+      border: none;
+      color: var(--color-primary);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+    }
+
+    .dish-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid var(--color-surface-subtle);
+    }
+    .stock-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-success);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .stock-tag.out {
+      color: var(--color-danger);
+    }
+
+    /* Modal Alergeni */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: var(--space-md);
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      max-width: 580px;
+      width: 100%;
+      max-height: 85vh;
+      box-shadow: var(--shadow-modal);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .modal-header {
+      padding: var(--space-md);
+      background: var(--color-surface-subtle);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-body {
+      padding: var(--space-md);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      font-size: 13px;
+    }
+    .allergen-def-item {
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+    }
+    .allergen-def-title {
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 2px;
+    }
+
+    /* Footer comandă la masă */
+    .order-status-bar {
+      position: sticky;
+      bottom: 0;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      padding: var(--space-sm) var(--space-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+      z-index: 70;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-frame">
+
+    <!-- Header Meniu Digital -->
+    <header class="menu-header">
+      <div class="restaurant-meta">
+        <div class="table-indicator">
+          <span>📍</span>
+          <span id="current-table-label">Masa 1</span>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <a href="/" class="btn btn-secondary" style="padding:4px 8px; font-size:11px;">Hub</a>
+          <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută tema">
+            <span id="theme-toggle-label">🌙 Temă</span>
+          </button>
+        </div>
+      </div>
+      <h1 class="restaurant-name">Restaurant Kon Tiki</h1>
+      <p class="restaurant-tagline">Meniu Complet cu Prețuri, Gramaje și Alergeni Oficiali</p>
+
+      <!-- Buton Ghid Alergeni & Căutare Preparate -->
+      <div class="utility-bar">
+        <button class="allergens-btn" onclick="openAllergensGuideModal()" aria-label="Deschide lista oficială a celor 15 grupe de alergeni">
+          <span>📋</span>
+          <span>Lista Alergeni (CE 2000-13 / H.G. 751)</span>
+        </button>
+        <input type="text" class="search-input" id="search-input" placeholder="Caută preparat (ex. Ciorbă, Șnițel, Ceafă...)" aria-label="Căutare preparate în meniu" oninput="filterMenu()">
+      </div>
+    </header>
+
+    <!-- Selector Categorii Meniu -->
+    <nav class="category-tabs" id="categories-tabs-nav" aria-label="Categorii Meniu">
+      <!-- Populat dinamic -->
+    </nav>
+
+    <!-- Listă Preparate Meniu -->
+    <main class="menu-content" id="dishes-container">
+      <div style="text-align: center; padding: 40px; color: var(--color-text-muted);">
+        Se încarcă meniul complet Kon Tiki și lista oficială de alergeni...
+      </div>
+    </main>
+
+    <!-- Crawler & AI Assistant Accessible Allergens Information (GEO: Generative Engine Optimization) -->
+    <section class="seo-allergens-section" style="padding: var(--space-md); border-top: 1px solid var(--color-border); font-size: 12px; color: var(--color-text-muted);">
+      <details>
+        <summary style="cursor: pointer; font-weight: 700; color: var(--color-text);">
+          ℹ️ Ghid Oficial Alergeni Alimentari — Directiva CE 2000-13 & H.G. 751/2008
+        </summary>
+        <div style="margin-top: 8px; line-height: 1.6;">
+          Restaurant Kon Tiki declară cele 15 grupe de alergeni:
+          <strong>1. Gluten</strong>, <strong>2. Crustacee</strong>, <strong>3. Ouă</strong>, <strong>4. Pește</strong>, 
+          <strong>5. Arahide</strong>, <strong>6. Soia</strong>, <strong>7. Lapte / Lactoză</strong>, 
+          <strong>8. Fructe cu coajă</strong>, <strong>9. Țelină</strong>, <strong>10. Muștar</strong>, 
+          <strong>11. Susan</strong>, <strong>12. Sulfiți</strong>, <strong>13. Lupin</strong>, 
+          <strong>14. Moluște</strong>, <strong>15. Produse decongelate</strong>.
+        </div>
+      </details>
+    </section>
+
+    <!-- Footer Bar -->
+    <footer class="order-status-bar">
+      <div>
+        <div style="font-size: 11px; color: var(--color-text-muted);">Comandă la Masa dvs.?</div>
+        <div style="font-size: 13px; font-weight: 700;" id="table-status-label">Verifică stadiul preparării</div>
+      </div>
+      <a href="/order-status.html" id="order-status-link" class="btn btn-primary" style="font-size:12px; padding:8px 14px;">
+        <span>Stadiu Comandă Masă</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    </footer>
+
+  </div>
+
+  <!-- Modal 1: Ghidul Complet al celor 15 Alergeni Oficiali -->
+  <div class="modal-overlay" id="allergens-guide-modal" role="dialog" aria-modal="true" aria-labelledby="allergens-guide-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h2 id="allergens-guide-title" style="font-family:var(--font-heading); font-size:16px; color:var(--color-primary); margin:0;">
+            Lista Alergenilor Alimentari
+          </h2>
+          <div style="font-size:11px; color:var(--color-text-muted);">
+            Conform Directivei CE 2000-13 și H.G. 751/2008 (Restaurant Kon Tiki)
+          </div>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="closeAllergensGuideModal()" aria-label="Închide ghidul alergenilor">✕</button>
+      </div>
+      <div class="modal-body" id="allergens-list-container">
+        <!-- Populat dinamic din /api/allergens -->
+      </div>
+      <div style="padding: var(--space-sm) var(--space-md); background:var(--color-surface-subtle); border-top:1px solid var(--color-border); text-align:right;">
+        <button class="btn btn-secondary" onclick="closeAllergensGuideModal()">Închide Ghidul</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Detalii Alergeni per Preparat Specific -->
+  <div class="modal-overlay" id="dish-allergens-modal" role="dialog" aria-modal="true" aria-labelledby="modal-dish-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h2 id="modal-dish-title" style="font-family:var(--font-heading); font-size:16px; color:var(--color-primary); margin:0;">
+            Alergeni Preparat
+          </h2>
+          <div id="modal-dish-weight" style="font-size:11px; color:var(--color-text-muted);"></div>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="closeDishAllergensModal()" aria-label="Închide fereastra alergenilor preparatului">✕</button>
+      </div>
+      <div class="modal-body" id="dish-allergens-details">
+        <!-- Populat dinamic -->
+      </div>
+      <div style="padding: var(--space-sm) var(--space-md); background:var(--color-surface-subtle); border-top:1px solid var(--color-border); display:flex; justify-content:space-between; align-items:center;">
+        <button class="btn btn-secondary" style="font-size:12px;" onclick="closeDishAllergensModal(); openAllergensGuideModal();">
+          📖 Vezi toate cele 15 grupe
+        </button>
+        <button class="btn btn-primary" style="font-size:12px;" onclick="closeDishAllergensModal()">Am înțeles</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const tableNumber = parseInt(urlParams.get('masa') || '1', 10);
+    document.getElementById('current-table-label').textContent = `Masa ${tableNumber}`;
+    document.getElementById('order-status-link').href = `/order-status.html?masa=${tableNumber}`;
+
+    let allMenuData = [];
+    let allergensGuide = [];
+    let currentCategory = 'all';
+
+    async function initClientMenu() {
+      await Promise.all([loadAllergens(), loadMenu()]);
+    }
+
+    async function loadAllergens() {
+      try {
+        const res = await fetch('/api/allergens');
+        const data = await res.json();
+        if (data.success) {
+          allergensGuide = data.allergens;
+          renderAllergensGuide();
+        }
+      } catch (err) {
+        console.error('Eroare alergeni:', err);
+      }
+    }
+
+    async function loadMenu() {
+      try {
+        const res = await fetch('/api/menu');
+        const data = await res.json();
+        if (data.success) {
+          allMenuData = data.menu;
+          renderCategoryTabs();
+          filterMenu();
+        }
+      } catch (err) {
+        console.error('Eroare încărcare meniu:', err);
+      }
+    }
+
+    function renderCategoryTabs() {
+      const nav = document.getElementById('categories-tabs-nav');
+      nav.innerHTML = '';
+
+      // Extragere categorii unice
+      const categories = ['all', ...new Set(allMenuData.map(d => d.category))];
+
+      for (const cat of categories) {
+        const btn = document.createElement('button');
+        btn.className = `tab-btn ${cat === currentCategory ? 'active' : ''}`;
+        btn.textContent = cat === 'all' ? 'Toate Preparatele' : cat;
+        btn.onclick = () => {
+          currentCategory = cat;
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          filterMenu();
+        };
+        nav.appendChild(btn);
+      }
+    }
+
+    function filterMenu() {
+      const searchTxt = (document.getElementById('search-input').value || '').toLowerCase().trim();
+      
+      let filtered = allMenuData;
+      if (currentCategory !== 'all') {
+        filtered = filtered.filter(d => d.category === currentCategory);
+      }
+      if (searchTxt) {
+        filtered = filtered.filter(d => 
+          d.name.toLowerCase().includes(searchTxt) || 
+          d.category.toLowerCase().includes(searchTxt) ||
+          (d.weight && d.weight.toLowerCase().includes(searchTxt))
+        );
+      }
+
+      renderDishes(filtered);
+    }
+
+    function renderDishes(dishesList) {
+      const container = document.getElementById('dishes-container');
+      container.innerHTML = '';
+
+      if (dishesList.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--color-text-muted);">Niciun preparat nu corespunde criteriilor de căutare.</div>';
+        return;
+      }
+
+      // Grupare pe categorii
+      const grouped = {};
+      for (const d of dishesList) {
+        if (!grouped[d.category]) grouped[d.category] = [];
+        grouped[d.category].push(d);
+      }
+
+      for (const [categoryName, items] of Object.entries(grouped)) {
+        const sectionTitle = document.createElement('h2');
+        sectionTitle.className = 'category-section-title';
+        sectionTitle.textContent = `${categoryName} (${items.length})`;
+        container.appendChild(sectionTitle);
+
+        for (const dish of items) {
+          const card = document.createElement('article');
+          card.className = `dish-card ${dish.is_available ? 'available' : 'unavailable'}`;
+
+          const priceStr = Number(dish.price).toFixed(2).replace('.', ',') + ' lei';
+          const weightDisplay = dish.weight ? `⚖️ ${escapeHtml(dish.weight)}` : '';
+
+          // Alergeni chips
+          let allergensChipsHtml = '';
+          const allergenIds = dish.allergens || [];
+          if (allergenIds.length > 0) {
+            const chips = allergenIds.map(id => {
+              const info = allergensGuide.find(a => a.id === id);
+              const label = info ? `${id}. ${info.shortName}` : `${id}`;
+              const fullName = info ? info.name : id;
+              return `<span class="allergen-chip" title="${escapeHtml(fullName)}">${escapeHtml(label)}</span>`;
+            }).join('');
+            allergensChipsHtml = `
+              <div class="dish-allergens-row">
+                <span style="font-size:11px; font-weight:700; color:var(--color-text-muted);">Alergeni:</span>
+                ${chips}
+                <button class="allergen-inspect-btn" onclick="openDishAllergensModal(this.dataset.dishId)" data-dish-id="${escapeHtml(dish.id)}">vezi detalii</button>
+              </div>
+            `;
+          } else {
+            allergensChipsHtml = `
+              <div class="dish-allergens-row">
+                <span style="font-size:11px; color:var(--color-text-muted);">✓ Fără alergeni majori declarați</span>
+              </div>
+            `;
+          }
+
+          const stockHtml = dish.is_available
+            ? `<span class="stock-tag"><span>✓</span> Disponibil</span>`
+            : `<span class="stock-tag out"><span>✕</span> Indisponibil momentan</span>`;
+
+          const actionBtn = dish.is_available
+            ? `<button class="btn btn-secondary" style="padding:5px 12px; font-size:12px;" onclick="orderDirectly(this.dataset.dishId, this.dataset.dishName)" data-dish-id="${escapeHtml(dish.id)}" data-dish-name="${escapeHtml(dish.name)}">+ Comandă la Masă</button>`
+            : `<button class="btn btn-secondary" disabled style="padding:5px 12px; font-size:12px; opacity:0.5;">Stoc epuizat</button>`;
+
+          card.innerHTML = `
+            <div class="dish-header">
+              <div class="dish-title-group">
+                <h3 class="dish-name">${escapeHtml(dish.name)}</h3>
+                ${weightDisplay ? `<div class="dish-weight-badge">${weightDisplay}</div>` : ''}
+              </div>
+              <div class="dish-price-box">
+                <div class="dish-price">${escapeHtml(priceStr)}</div>
+              </div>
+            </div>
+
+            ${allergensChipsHtml}
+
+            <div class="dish-footer-row">
+              ${stockHtml}
+              ${actionBtn}
+            </div>
+          `;
+
+          container.appendChild(card);
+        }
+      }
+    }
+
+    function renderAllergensGuide() {
+      const container = document.getElementById('allergens-list-container');
+      container.innerHTML = '';
+      for (const a of allergensGuide) {
+        const item = document.createElement('div');
+        item.className = 'allergen-def-item';
+        item.innerHTML = `
+          <div class="allergen-def-title">${a.id}. ${a.name}</div>
+          <div style="font-size:12px; color:var(--color-text-muted);">${a.details}</div>
+        `;
+        container.appendChild(item);
+      }
+    }
+
+    function openAllergensGuideModal() {
+      document.getElementById('allergens-guide-modal').classList.add('open');
+    }
+    function closeAllergensGuideModal() {
+      document.getElementById('allergens-guide-modal').classList.remove('open');
+    }
+
+    function openDishAllergensModal(dishId) {
+      const dish = allMenuData.find(d => d.id === dishId);
+      if (!dish) return;
+
+      document.getElementById('modal-dish-title').textContent = dish.name;
+      document.getElementById('modal-dish-weight').textContent = `Gramaj: ${dish.weight || 'porție standard'} · Preț: ${Number(dish.price).toFixed(2)} lei`;
+
+      const detailsContainer = document.getElementById('dish-allergens-details');
+      detailsContainer.innerHTML = '';
+
+      const allergenIds = dish.allergens || [];
+      if (allergenIds.length === 0) {
+        detailsContainer.innerHTML = '<div style="color:var(--color-success); font-weight:600;">Acest preparat nu conține alergeni majori declarați din cele 15 grupe reglementate.</div>';
+      } else {
+        const intro = document.createElement('div');
+        intro.style.cssText = 'color:var(--color-text-muted); font-size:12px; margin-bottom:6px;';
+        intro.textContent = `Acest preparat conține ${allergenIds.length} alergeni conform Directivei CE 2000-13 / H.G. 751/2008:`;
+        detailsContainer.appendChild(intro);
+
+        for (const id of allergenIds) {
+          const info = allergensGuide.find(a => a.id === id);
+          const box = document.createElement('div');
+          box.className = 'allergen-def-item';
+          box.innerHTML = `
+            <div class="allergen-def-title">Grupa ${id}: ${info ? info.name : id}</div>
+            <div style="font-size:12px; color:var(--color-text-muted);">${info ? info.details : ''}</div>
+          `;
+          detailsContainer.appendChild(box);
+        }
+      }
+
+      document.getElementById('dish-allergens-modal').classList.add('open');
+    }
+
+    function closeDishAllergensModal() {
+      document.getElementById('dish-allergens-modal').classList.remove('open');
+    }
+
+    async function orderDirectly(dishId, dishName) {
+      try {
+        const payload = {
+          table_number: tableNumber,
+          items: [{ dish_id: dishId, quantity: 1, extras: [] }]
+        };
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✓ Comanda pentru ${dishName} a fost trimisă la bucătărie!`, 'success');
+          setTimeout(() => {
+            window.location.href = `/order-status.html?masa=${tableNumber}`;
+          }, 1000);
+        } else {
+          showToast(`Eroare: ${data.error}`, 'error');
+        }
+      } catch (err) {
+        showToast('Eroare rețea la transmiterea comenzii', 'error');
+      }
+    }
+
+    initClientMenu();
+
+    // Actualizare live via SSE cu debounce pentru a preveni jank la navigare
+    let menuReloadTimer = null;
+    function debouncedLoadMenu() {
+      if (menuReloadTimer) clearTimeout(menuReloadTimer);
+      menuReloadTimer = setTimeout(() => loadMenu(), 300);
+    }
+
+    sseClient.on('stock:update', debouncedLoadMenu);
+    sseClient.on('order:new', debouncedLoadMenu);
+    sseClient.on('system:reset', debouncedLoadMenu);
+  </script>
+</body>
+</html>

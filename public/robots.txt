@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /client-menu.html
+Disallow: /kds.html
+Disallow: /cashier.html
+Disallow: /admin.html
+Disallow: /waiter.html
+Disallow: /monitor.html
+Disallow: /qr-tables.html
+Disallow: /order-status.html
+Disallow: /api/
+
+Sitemap: https://restaurantkontiki.ro/sitemap.xml

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Ecran Casă / Încasare & Bon Fiscal · Restaurant Kon Tiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+  <style>
+    .cashier-layout {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-md);
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: var(--space-lg);
+    }
+    @media (max-width: 850px) {
+      .cashier-layout { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .panel-heading {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      color: var(--color-primary);
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-xs);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    /* Grid Mese Stânga */
+    .tables-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      max-height: 580px;
+      overflow-y: auto;
+    }
+    .table-row-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .table-row-item.active {
+      border-color: var(--color-primary);
+      background: var(--color-surface);
+      box-shadow: 0 0 0 2px var(--color-primary);
+    }
+    .table-row-item.has-unpaid {
+      border-left: 5px solid var(--color-warning);
+    }
+    /* Bon Fiscal Detalii */
+    .receipt-preview {
+      background: var(--color-surface-subtle);
+      border: 1px dashed var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      font-family: monospace;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .receipt-header {
+      text-align: center;
+      border-bottom: 1px dashed var(--color-border);
+      padding-bottom: var(--space-xs);
+      margin-bottom: var(--space-xs);
+    }
+    .payment-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+    .payment-card {
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      text-align: center;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all var(--transition-fast);
+      background: var(--color-surface-subtle);
+    }
+    .payment-card.selected {
+      border-color: var(--color-primary);
+      background: var(--color-surface);
+      color: var(--color-primary);
+    }
+    /* Modal Succes */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      max-width: 480px;
+      width: 90%;
+      box-shadow: var(--shadow-modal);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <nav class="top-navbar">
+    <div style="display:flex; align-items:center; gap:var(--space-md);">
+      <a href="/" class="brand-title">🍲 Restaurant Kon Tiki</a>
+      <span class="badge badge-info">Ecran Casă / Încasare</span>
+    </div>
+    <div class="nav-links">
+      <a href="/kds.html" class="nav-link">Bucătărie (KDS)</a>
+      <a href="/waiter.html" class="nav-link">Ospătar</a>
+      <a href="/monitor.html" class="nav-link">Monitor</a>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută tema">
+        <span id="theme-toggle-label">🌙 Temă</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="cashier-layout">
+
+    <!-- Panou Stânga: Mesele 1-12 și Sume de Încasat -->
+    <div class="panel">
+      <div class="panel-heading">
+        <span>Mese în Sală (1 - 12)</span>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="loadCashierData()">🔄 Reîmprospătează</button>
+      </div>
+      <div class="tables-list" id="cashier-tables-list">
+        <!-- Populat dinamic -->
+      </div>
+    </div>
+
+    <!-- Panou Dreapta: Detalii Consum & Încasare Masă (D-004, D-006) -->
+    <div class="panel">
+      <div class="panel-heading">
+        <span id="selected-table-title">Încasare Masa 1</span>
+        <span class="badge badge-warning" id="table-badge-status">Ocupată</span>
+      </div>
+
+      <!-- Bon Fiscal Previzualizare -->
+      <div class="receipt-preview" id="receipt-preview-box">
+        <div class="receipt-header">
+          <strong>RESTAURANT KON TIKI</strong><br>
+          CUI: RO48920114 · J40/1234/2026<br>
+          Str. Restaurantului nr. 12<br>
+          BON FISCAL CONSOLIDAT (D-006)
+        </div>
+        <div id="receipt-items-container">
+          <!-- Populat dinamic -->
+        </div>
+        <div style="border-top:1px dashed var(--color-border); margin-top:8px; padding-top:8px; display:flex; justify-content:space-between; font-weight:700; font-size:15px;">
+          <span>TOTAL DE PLATĂ:</span>
+          <span id="receipt-total-val" style="color:var(--color-primary);">0,00 LEI</span>
+        </div>
+      </div>
+
+      <!-- Selectare Metodă Plată -->
+      <div>
+        <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px;">Selectează Metoda de Plată:</div>
+        <div class="payment-options">
+          <div class="payment-card selected" id="method-card" onclick="selectPaymentMethod('Card')">
+            💳 Card (POS Fizic)
+          </div>
+          <div class="payment-card" id="method-cash" onclick="selectPaymentMethod('Numerar')">
+            💵 Numerar
+          </div>
+        </div>
+      </div>
+
+      <!-- Buton Procesare Plată & Emitere Bon Fiscal PDF -->
+      <button class="btn btn-primary" id="btn-process-payment" style="padding:14px; font-size:15px;" onclick="executePayment()">
+        🖨️ Încasează & Emite Bon Fiscal PDF
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Modal Confirmare Plată & Descărcare PDF -->
+  <div class="modal-overlay" id="payment-success-modal">
+    <div class="modal-box">
+      <div style="font-size: 40px;">🧾</div>
+      <h2 style="font-family: var(--font-heading); color: var(--color-success); font-size: 22px;">Plată Înregistrată cu Succes!</h2>
+      <p id="modal-payment-summary" style="color: var(--color-text-muted); font-size: 14px;"></p>
+      
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <a id="btn-download-pdf" href="#" target="_blank" class="btn btn-primary" style="padding:12px;">
+          📥 Descarcă Bon Fiscal PDF Oficial (D-005)
+        </a>
+        <button class="btn btn-secondary" onclick="closeModal()">
+          Închide & Revino la Mese
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    let activeTable = 1;
+    let selectedMethod = 'Card';
+    let currentTableOrders = [];
+    let currentTableTotal = 0;
+
+    async function loadCashierData() {
+      try {
+        const res = await fetch('/api/tables');
+        const data = await res.json();
+        if (data.success) {
+          renderTablesList(data.tables);
+          loadTableDetails(activeTable);
+        }
+      } catch (err) {
+        console.error('Eroare casă:', err);
+      }
+    }
+
+    function renderTablesList(tables) {
+      const container = document.getElementById('cashier-tables-list');
+      container.innerHTML = '';
+
+      for (const t of tables) {
+        const item = document.createElement('div');
+        const activeCount = t.active_orders ? t.active_orders.length : 0;
+        item.className = `table-row-item ${t.table_number === activeTable ? 'active' : ''} ${activeCount > 0 ? 'has-unpaid' : ''}`;
+        item.onclick = () => {
+          activeTable = t.table_number;
+          renderTablesList(tables);
+          loadTableDetails(activeTable);
+        };
+
+        let badge = `<span class="badge badge-success">Liberă</span>`;
+        if (t.status === 'ocupată') badge = `<span class="badge badge-warning">${activeCount} comenzi</span>`;
+        if (t.status === 'rezervată') badge = `<span class="badge badge-info">Rezervată</span>`;
+
+        item.innerHTML = `
+          <div>
+            <strong>Masa ${t.table_number}</strong>
+            <div style="font-size:11px; color:var(--color-text-muted);">${t.status}</div>
+          </div>
+          <div>${badge}</div>
+        `;
+        container.appendChild(item);
+      }
+    }
+
+    async function loadTableDetails(tableNum) {
+      document.getElementById('selected-table-title').textContent = `Încasare Masa ${tableNum}`;
+      try {
+        const res = await fetch(`/api/orders/table/${tableNum}`);
+        const data = await res.json();
+        const container = document.getElementById('receipt-items-container');
+        const totalSpan = document.getElementById('receipt-total-val');
+        const btnPay = document.getElementById('btn-process-payment');
+        const badgeStatus = document.getElementById('table-badge-status');
+
+        if (!data.success || !data.orders || data.orders.length === 0) {
+          container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--color-text-muted);">Masa este liberă sau nu are comenzi neachitate.</div>';
+          totalSpan.textContent = '0,00 LEI';
+          btnPay.disabled = true;
+          btnPay.style.opacity = '0.5';
+          badgeStatus.textContent = 'Fără consumație';
+          badgeStatus.className = 'badge badge-info';
+          currentTableOrders = [];
+          currentTableTotal = 0;
+          return;
+        }
+
+        currentTableOrders = data.orders;
+        currentTableTotal = data.total_amount;
+        btnPay.disabled = false;
+        btnPay.style.opacity = '1';
+        badgeStatus.textContent = `${currentTableOrders.length} comenzi active`;
+        badgeStatus.className = 'badge badge-warning';
+
+        container.innerHTML = '';
+        for (const ord of currentTableOrders) {
+          const ordHeader = document.createElement('div');
+          ordHeader.style.cssText = 'font-weight:bold; margin-top:6px; border-bottom:1px dotted var(--color-border);';
+          ordHeader.textContent = `--- Comandă #${ord.id.slice(-6)} ---`;
+          container.appendChild(ordHeader);
+
+          for (const it of ord.items) {
+            const line = document.createElement('div');
+            line.style.cssText = 'display:flex; justify-content:space-between; margin:2px 0;';
+            const extrasStr = (it.extras && it.extras.length > 0) ? ` (+${it.extras.map(e => e.name).join(', ')})` : '';
+            line.innerHTML = `
+              <span>${it.quantity}x ${it.dish_name || it.dish_id}${extrasStr}</span>
+              <span>${Number(it.item_price).toFixed(2)} LEI</span>
+            `;
+            container.appendChild(line);
+          }
+        }
+
+        totalSpan.textContent = Number(currentTableTotal).toFixed(2).replace('.', ',') + ' LEI';
+
+      } catch (err) {
+        console.error('Eroare detalii masă:', err);
+      }
+    }
+
+    function selectPaymentMethod(method) {
+      selectedMethod = method;
+      document.getElementById('method-card').classList.toggle('selected', method === 'Card');
+      document.getElementById('method-cash').classList.toggle('selected', method === 'Numerar');
+    }
+
+    async function executePayment() {
+      if (currentTableOrders.length === 0) {
+        showToast('Nu există nicio consumație activă de încasat.', 'warning');
+        return;
+      }
+
+      try {
+        const payload = {
+          table_number: activeTable,
+          payment_method: selectedMethod
+        };
+        const res = await fetch('/api/payments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✓ Încasare confirmată pentru Masa ${activeTable}!`, 'success');
+          
+          // Deschidere modal succes cu link descărcare PDF
+          document.getElementById('modal-payment-summary').innerHTML = `
+            Consumația cumulată a Mesei ${activeTable} în valoare de <strong>${data.payment.total_amount.toFixed(2)} LEI</strong> 
+            a fost achitată prin <strong>${data.payment.payment_method === 'Card' ? 'Card (POS Fizic)' : 'Numerar'}</strong>.<br>
+            Masa a fost marcată automat ca <strong>Liberă</strong>.
+          `;
+          document.getElementById('btn-download-pdf').href = data.pdf_url;
+          document.getElementById('payment-success-modal').classList.add('open');
+
+          loadCashierData();
+        } else {
+          showToast(`Eroare încasare: ${data.error}`, 'error');
+        }
+      } catch (err) {
+        showToast('Eroare rețea la procesarea plății', 'error');
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('payment-success-modal').classList.remove('open');
+    }
+
+    loadCashierData();
+
+    // Actualizare live via SSE
+    sseClient.on('order:new', () => loadCashierData());
+    sseClient.on('order:status', () => loadCashierData());
+    sseClient.on('table:status', () => loadCashierData());
+    sseClient.on('payment:done', () => loadCashierData());
+  </script>
+</body>
+</html>
