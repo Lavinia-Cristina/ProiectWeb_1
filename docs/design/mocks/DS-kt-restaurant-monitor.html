@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DS-kt-restaurant-monitor · Monitor Central Restaurant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #faf8f5;
+      --color-surface: #ffffff;
+      --color-surface-subtle: #f2eee9;
+      --color-border: #e2dcd4;
+      --color-text: #241e19;
+      --color-text-muted: #6e645a;
+      --color-primary: #8c3a1e;
+      --color-primary-hover: #732f18;
+      --color-secondary: #4a5548;
+      --color-accent: #c97a2b;
+      --color-success: #2d6a4f;
+      --color-warning: #b45309;
+      --color-danger: #b91c1c;
+
+      --font-heading: 'Merriweather', Georgia, serif;
+      --font-subheading: 'Merriweather', Georgia, serif;
+      --font-dish-title: 'Merriweather', Georgia, serif;
+      --font-sans: 'Inter', system-ui, sans-serif;
+
+      --space-2xs: 4px;
+      --space-xs: 8px;
+      --space-sm: 12px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+
+      --shadow-card: 0 2px 8px rgba(36, 30, 25, 0.06);
+      --shadow-modal: 0 12px 28px rgba(36, 30, 25, 0.16);
+      --transition-fast: 150ms ease-in-out;
+    }
+
+    [data-theme="dark"] {
+      --color-bg: #181614;
+      --color-surface: #23201d;
+      --color-surface-subtle: #2d2925;
+      --color-border: #3d3731;
+      --color-text: #f4eee7;
+      --color-text-muted: #aba095;
+      --color-primary: #e07a52;
+      --color-primary-hover: #ea8e69;
+      --color-secondary: #889c84;
+      --color-accent: #df9547;
+      --color-success: #52b788;
+      --color-warning: #fbbf24;
+      --color-danger: #f87171;
+      --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.35);
+      --shadow-modal: 0 12px 28px rgba(0, 0, 0, 0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-md);
+      min-height: 100vh;
+    }
+
+    .figma-frame-header {
+      width: 100%;
+      max-width: 1280px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-md);
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+    .figma-tag { font-weight: 700; color: var(--color-primary); }
+    .theme-toggle-btn {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--color-text);
+    }
+
+    .monitor-viewport {
+      width: 100%;
+      max-width: 1280px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 740px;
+    }
+
+    .monitor-header {
+      padding: var(--space-md) var(--space-lg);
+      background: var(--color-surface);
+      border-bottom: 2px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .monitor-brand {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .live-clock-badge {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    /* Ready Orders Ticker for Waiters */
+    .ready-banner {
+      background: rgba(45, 106, 79, 0.16);
+      border-bottom: 2px solid var(--color-success);
+      padding: var(--space-sm) var(--space-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-success);
+    }
+    .ready-chip {
+      background: var(--color-success);
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      animation: pulse-ready 1.5s infinite;
+    }
+    @keyframes pulse-ready {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .monitor-body {
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      flex: 1;
+      background: var(--color-bg);
+    }
+
+    .section-label {
+      font-family: var(--font-subheading);
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: var(--space-sm);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Grid of 12 tables */
+    .tables-matrix {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-md);
+    }
+    .matrix-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+    .matrix-card.state-ready {
+      border: 2px solid var(--color-success);
+      background: rgba(45, 106, 79, 0.08);
+    }
+    .matrix-card.state-cooking {
+      border: 1px solid var(--color-accent);
+    }
+    .matrix-card.state-free {
+      opacity: 0.75;
+    }
+
+    .card-matrix-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .status-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+    }
+    .status-pill.free { background: rgba(45, 106, 79, 0.12); color: var(--color-success); }
+    .status-pill.cooking { background: rgba(201, 122, 43, 0.15); color: var(--color-accent); }
+    .status-pill.ready { background: var(--color-success); color: #ffffff; }
+    .status-pill.reserved { background: rgba(74, 85, 72, 0.15); color: var(--color-secondary); }
+
+    .matrix-dish-preview {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="figma-frame-header">
+    <span>Frame: <span class="figma-tag">DS-kt-restaurant-monitor · Monitor Central Restaurant</span></span>
+    <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută modul vizual">Mod Luminos / Întunecat</button>
+  </div>
+
+  <div class="monitor-viewport">
+    
+    <header class="monitor-header">
+      <div class="monitor-brand">Restaurant Kon Tiki • Monitor Central Sală</div>
+      <div class="live-clock-badge">
+        <span>● Sală activă (12 Mese)</span>
+        <span style="font-family: monospace; font-size: 18px;">12:52:14</span>
+      </div>
+    </header>
+
+    <!-- Alerte Comenzi Gata pentru Ospatari -->
+    <div class="ready-banner">
+      <span>🔔 ATENȚIE OSPĂTARI — COMENZI GATA DE RIDICARE DIN BUCĂTĂRIE:</span>
+      <span class="ready-chip">MASA 10 • #101 GATA</span>
+      <span class="ready-chip">MASA 8 • #105 GATA</span>
+    </div>
+
+    <main class="monitor-body">
+      
+      <div>
+        <div class="section-label">
+          <span>Stare Mese Sală & Progres Comenzi:</span>
+          <span style="font-size: 13px; font-weight: 500; color: var(--color-text-muted);">
+            Liber: 6 | În preparare: 3 | Gata: 2 | Rezervat: 1
+          </span>
+        </div>
+
+        <div class="tables-matrix">
+          
+          <div class="matrix-card state-free">
+            <div class="card-matrix-head">
+              <span>MASA 1</span>
+              <span class="status-pill free">Liberă</span>
+            </div>
+            <div class="matrix-dish-preview">Masă curată • Cod QR activ</div>
+          </div>
+
+          <div class="matrix-card state-cooking">
+            <div class="card-matrix-head">
+              <span>MASA 2</span>
+              <span class="status-pill cooking">În Bucătărie (12m)</span>
+            </div>
+            <div class="matrix-dish-preview">2x Ciorbă de burtă + extra smântână • Comandă întârziată</div>
+          </div>
+
+          <div class="matrix-card state-free">
+            <div class="card-matrix-head">
+              <span>MASA 3</span>
+              <span class="status-pill free">Liberă</span>
+            </div>
+            <div class="matrix-dish-preview">Masă curată • Cod QR activ</div>
+          </div>
+
+          <div class="matrix-card state-cooking">
+            <div class="card-matrix-head">
+              <span>MASA 4</span>
+              <span class="status-pill cooking">În Bucătărie (6m)</span>
+            </div>
+            <div class="matrix-dish-preview">1x Ciorbă de burtă, 1x Cartofi cu brânză</div>
+          </div>
+
+          <div class="matrix-card">
+            <div class="card-matrix-head">
+              <span>MASA 5</span>
+              <span class="status-pill reserved">Rezervată</span>
+            </div>
+            <div class="matrix-dish-preview">Rezervare ora 14:00 (Popescu)</div>
+          </div>
+
+          <div class="matrix-card state-free">
+            <div class="card-matrix-head">
+              <span>MASA 6</span>
+              <span class="status-pill free">Liberă</span>
+            </div>
+            <div class="matrix-dish-preview">Masă curată • Cod QR activ</div>
+          </div>
+
+          <div class="matrix-card state-free">
+            <div class="card-matrix-head">
+              <span>MASA 7</span>
+              <span class="status-pill free">Liberă</span>
+            </div>
+            <div class="matrix-dish-preview">Masă curată • Cod QR activ</div>
+          </div>
+
+          <div class="matrix-card state-ready">
+            <div class="card-matrix-head">
+              <span>MASA 8</span>
+              <span class="status-pill ready">GATA DE SERVIRE</span>
+            </div>
+            <div class="matrix-dish-preview">2x Cartofi cu brânză suplimentară • Preluare de ospătar</div>
+          </div>
+
+          <div class="matrix-card state-free">
+            <div class="card-matrix-head">
+              <span>MASA 9</span>
+              <span class="status-pill free">Liberă</span>
+            </div>
+            <div class="matrix-dish-preview">Masă curată • Cod QR activ</div>
+          </div>
+
+          <div class="matrix-card state-ready">
+            <div class="card-matrix-head">
+              <span>MASA 10</span>
+              <span class="status-pill ready">GATA DE SERVIRE</span>
+            </div>
+            <div class="matrix-dish-preview">3x Ciorbă de burtă, 3x coșuleț pâine • Preluare de ospătar</div>
+          </div>
+
+          <div class="matrix-card state-free">
+            <div class="card-matrix-head">
+              <span>MASA 11</span>
+              <span class="status-pill free">Liberă</span>
+            </div>
+            <div class="matrix-dish-preview">Masă curată • Cod QR activ</div>
+          </div>
+
+          <div class="matrix-card state-free">
+            <div class="card-matrix-head">
+              <span>MASA 12</span>
+              <span class="status-pill free">Liberă</span>
+            </div>
+            <div class="matrix-dish-preview">Masă curată • Cod QR activ</div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+    }
+  </script>
+</body>
+</html>

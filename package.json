@@ -1,0 +1,24 @@
+{
+  "name": "proiectweb_1",
+  "version": "1.0.0",
+  "description": "Meniu Digital + Comenzi cu Stoc pe Ingrediente - Restaurant Kon Tiki (12 Mese)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "seed": "node src/db/seed.js",
+    "test": "node --test tests/**/*.test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pdfkit": "^0.20.2",
+    "qrcode": "^1.5.4"
+  },
+  "keywords": [
+    "restaurant",
+    "kds",
+    "digital-menu",
+    "stock-management"
+  ],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DS-kt-admin · Ecran Administrare & Stocuri</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #faf8f5;
+      --color-surface: #ffffff;
+      --color-surface-subtle: #f2eee9;
+      --color-border: #e2dcd4;
+      --color-text: #241e19;
+      --color-text-muted: #6e645a;
+      --color-primary: #8c3a1e;
+      --color-primary-hover: #732f18;
+      --color-secondary: #4a5548;
+      --color-accent: #c97a2b;
+      --color-success: #2d6a4f;
+      --color-warning: #b45309;
+      --color-danger: #b91c1c;
+
+      --font-heading: 'Merriweather', Georgia, serif;
+      --font-subheading: 'Merriweather', Georgia, serif;
+      --font-dish-title: 'Merriweather', Georgia, serif;
+      --font-sans: 'Inter', system-ui, sans-serif;
+
+      --space-2xs: 4px;
+      --space-xs: 8px;
+      --space-sm: 12px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+
+      --shadow-card: 0 2px 8px rgba(36, 30, 25, 0.06);
+      --shadow-modal: 0 12px 28px rgba(36, 30, 25, 0.16);
+      --transition-fast: 150ms ease-in-out;
+    }
+
+    [data-theme="dark"] {
+      --color-bg: #181614;
+      --color-surface: #23201d;
+      --color-surface-subtle: #2d2925;
+      --color-border: #3d3731;
+      --color-text: #f4eee7;
+      --color-text-muted: #aba095;
+      --color-primary: #e07a52;
+      --color-primary-hover: #ea8e69;
+      --color-secondary: #889c84;
+      --color-accent: #df9547;
+      --color-success: #52b788;
+      --color-warning: #fbbf24;
+      --color-danger: #f87171;
+      --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.35);
+      --shadow-modal: 0 12px 28px rgba(0, 0, 0, 0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-md);
+      min-height: 100vh;
+    }
+
+    .figma-frame-header {
+      width: 100%;
+      max-width: 1180px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-md);
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+    .figma-tag { font-weight: 700; color: var(--color-primary); }
+    .theme-toggle-btn {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--color-text);
+    }
+
+    /* Admin Viewport Desktop */
+    .admin-viewport {
+      width: 100%;
+      max-width: 1180px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 760px;
+    }
+
+    .admin-navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-md) var(--space-lg);
+      border-bottom: 2px solid var(--color-border);
+      background: var(--color-surface);
+    }
+    .admin-title {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .admin-tabs {
+      display: flex;
+      background: var(--color-surface-subtle);
+      border-bottom: 1px solid var(--color-border);
+      padding: 0 var(--space-lg);
+      gap: var(--space-sm);
+    }
+    .admin-tab {
+      padding: var(--space-sm) var(--space-md);
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      text-decoration: none;
+    }
+    .admin-tab.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+      background: var(--color-surface);
+    }
+
+    .admin-content {
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      flex: 1;
+    }
+
+    /* Quick Alert Banner */
+    .alert-banner {
+      background: rgba(180, 83, 9, 0.12);
+      border: 1px solid var(--color-warning);
+      border-radius: var(--radius-md);
+      padding: var(--space-sm) var(--space-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+    }
+    .alert-text { font-weight: 600; color: var(--color-warning); }
+
+    /* Tables */
+    .data-table-container {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--color-surface);
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .data-table th {
+      background: var(--color-surface-subtle);
+      padding: var(--space-sm) var(--space-md);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .data-table td {
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--color-border);
+      font-size: 14px;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: var(--color-surface-subtle); }
+
+    .unit-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+    }
+    .stock-val { font-weight: 700; font-size: 15px; }
+    .stock-val.ok { color: var(--color-success); }
+    .stock-val.warning { color: var(--color-warning); }
+    .stock-val.danger { color: var(--color-danger); }
+
+    .btn-quick-add {
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--color-text);
+    }
+    .btn-quick-add:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+    .btn-primary-action {
+      background: var(--color-primary);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn-primary-action:hover { background: var(--color-primary-hover); }
+
+    .section-head-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-xs);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="figma-frame-header">
+    <span>Frame: <span class="figma-tag">DS-kt-admin · Ecran Administrare & Stocuri</span></span>
+    <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută modul vizual">Mod Luminos / Întunecat</button>
+  </div>
+
+  <div class="admin-viewport">
+    
+    <header class="admin-navbar">
+      <div>
+        <h1 class="admin-title">Administrare Kon Tiki • Gestiune Stoc & Rețete</h1>
+        <div style="font-size: 12px; color: var(--color-text-muted);">Sistem intern pentru inventar, compoziție preparate și coordonare aprovizionare (Q-003)</div>
+      </div>
+      <div style="font-size: 14px; font-weight: 600;">Manager: <strong>Gestiune Local</strong></div>
+    </header>
+
+    <nav class="admin-tabs" aria-label="Module administrare">
+      <a href="#stocuri" class="admin-tab active">1. Inventar & Stocuri Ingrediente</a>
+      <a href="#retete" class="admin-tab">2. Rețete & Disponibilitate Meniu</a>
+      <a href="#mese" class="admin-tab">3. Stare Mese & Rezervări Telefonice</a>
+    </nav>
+
+    <main class="admin-content">
+      
+      <!-- Alert Stoc Critic -->
+      <div class="alert-banner">
+        <div class="alert-text">
+          ⚠️ ALERTĂ STOC: Ingredientul „Carne de vită mânzat” a atins stocul 0! Preparatul „Ciorbă țărănească de văcuță” este automat marcat ca indisponibil pe meniul digital.
+        </div>
+        <button class="btn-primary-action" style="font-size: 12px; padding: 4px 10px;">Adaugă Aprovizionare</button>
+      </div>
+
+      <!-- Tabel Inventar Live -->
+      <div>
+        <div class="section-head-bar">
+          <h2 style="font-family: var(--font-subheading); font-size: 18px;">Stoc Curent Ingrediente (Cupe / Porții / Coșulețe)</h2>
+          <button class="btn-quick-add">+ Ingredient Nou</button>
+        </div>
+
+        <div class="data-table-container">
+          <table class="data-table" aria-label="Tabel stocuri ingrediente">
+            <thead>
+              <tr>
+                <th>Ingredient</th>
+                <th>Unitate Măsură</th>
+                <th>Stoc Curent</th>
+                <th>Prag Minim Alertă</th>
+                <th>Stare Disponibilitate</th>
+                <th style="text-align: right;">Aprovizionare Rapidă</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Burtă de vită</strong></td>
+                <td><span class="unit-tag">porție</span></td>
+                <td><span class="stock-val ok">14 porții</span></td>
+                <td>5 porții</td>
+                <td><span style="color: var(--color-success); font-weight: 600;">✓ În stoc</span></td>
+                <td style="text-align: right;">
+                  <button class="btn-quick-add">+5 porții</button>
+                  <button class="btn-quick-add">+10 porții</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Smântână proaspătă</strong></td>
+                <td><span class="unit-tag">cupă</span></td>
+                <td><span class="stock-val ok">24 cupe</span></td>
+                <td>8 cupe</td>
+                <td><span style="color: var(--color-success); font-weight: 600;">✓ În stoc</span></td>
+                <td style="text-align: right;">
+                  <button class="btn-quick-add">+10 cupe</button>
+                  <button class="btn-quick-add">+20 cupe</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Usturoi în oțet (mujdei)</strong></td>
+                <td><span class="unit-tag">cupă</span></td>
+                <td><span class="stock-val ok">30 cupe</span></td>
+                <td>10 cupe</td>
+                <td><span style="color: var(--color-success); font-weight: 600;">✓ În stoc</span></td>
+                <td style="text-align: right;">
+                  <button class="btn-quick-add">+10 cupe</button>
+                </td>
+              </tr>
+              <tr style="background: rgba(185, 28, 28, 0.05);">
+                <td><strong>Carne vită mânzat</strong></td>
+                <td><span class="unit-tag">porție</span></td>
+                <td><span class="stock-val danger">0 porții</span></td>
+                <td>6 porții</td>
+                <td><span style="color: var(--color-danger); font-weight: 700;">✕ Epuizat (Critic)</span></td>
+                <td style="text-align: right;">
+                  <button class="btn-quick-add" style="border-color: var(--color-primary); color: var(--color-primary); font-weight: 700;">+ Aprovizionează</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Cartofi</strong></td>
+                <td><span class="unit-tag">porție</span></td>
+                <td><span class="stock-val ok">18 porții</span></td>
+                <td>6 porții</td>
+                <td><span style="color: var(--color-success); font-weight: 600;">✓ În stoc</span></td>
+                <td style="text-align: right;">
+                  <button class="btn-quick-add">+10 porții</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Telemea de oaie (Săliște)</strong></td>
+                <td><span class="unit-tag">porție</span></td>
+                <td><span class="stock-val warning">5 porții</span></td>
+                <td>5 porții</td>
+                <td><span style="color: var(--color-warning); font-weight: 600;">⚠️ Limită minimă</span></td>
+                <td style="text-align: right;">
+                  <button class="btn-quick-add">+10 porții</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Ardei murați (extra)</strong></td>
+                <td><span class="unit-tag">bucată</span></td>
+                <td><span class="stock-val ok">45 bucăți</span></td>
+                <td>15 bucăți</td>
+                <td><span style="color: var(--color-success); font-weight: 600;">✓ În stoc</span></td>
+                <td style="text-align: right;">
+                  <button class="btn-quick-add">+20 buc</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Pâine de casă</strong></td>
+                <td><span class="unit-tag">coșuleț</span></td>
+                <td><span class="stock-val ok">30 coșulețe</span></td>
+                <td>10 coșulețe</td>
+                <td><span style="color: var(--color-success); font-weight: 600;">✓ În stoc</span></td>
+                <td style="text-align: right;">
+                  <button class="btn-quick-add">+15 coșuri</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+    }
+  </script>
+</body>
+</html>

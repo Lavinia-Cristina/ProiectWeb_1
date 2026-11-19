@@ -1,4 +1,4 @@
-# DESIGN — ProiectWeb_1
+# DESIGN — ProiectWeb_1 (Restaurant Kon Tiki)
 
 <!-- graffino-agentic:begin v1 -->
 > The design guardrails for this app. Every UI change follows them. A change to a
@@ -42,19 +42,19 @@ board or Figma.
 
 **Color and contrast**
 - Text contrast ≥ 4.5:1 (≥ 3:1 for text ≥ 18.66 px bold / 24 px). Icons, borders of
-  inputs and focus rings ≥ 3:1 against their background. Check both themes.
+   inputs and focus rings ≥ 3:1 against their background. Check both themes.
 - Color never carries meaning alone: pair it with an icon or text.
 - Dark mode uses its own token values, not inverted light values.
 
 **Layout and spacing**
 - Spacing comes from the scale only. Align to the grid; equal gaps for equal
-  relationships.
+   relationships.
 - No horizontal scroll at the smallest supported width. Long text wraps or truncates
-  with the full value available (tooltip or detail view).
+   with the full value available (tooltip or detail view).
 
 **Typography**
 - Only the type scale below. One primary heading per screen. Sentence case for
-  labels, buttons and headings.
+   labels, buttons and headings.
 
 **Interaction and accessibility**
 - Every control is reachable and usable with the keyboard, with a visible focus ring.
@@ -79,43 +79,68 @@ pulled back.
 <!-- graffino-agentic:end -->
 
 ## Source
+- Identitate vizuală: Restaurant Kon Tiki (Sibiu) — atmosferă rustică, autentică, bazată pe meniul alb curat și tonuri neutre calde.
 - Design board: none yet (published from `mocks/`, never pulled)
 - Figma: none (regenerated on request)
-- Token source in code: to be configured (see Q-001)
 
-## Tokens
+---
 
-### Color
+## Tokens (Propuși pentru Kon Tiki)
+
+### Color (Neutre Moderne & Accente Rustice)
 | Token | Light | Dark | Use |
 |---|---|---|---|
-| `--color-bg` | `#ffffff` | `#111111` | Page background |
-| `--color-text` | `#111111` | `#f5f5f5` | Default body text |
-| `--color-primary` | `#0066cc` | `#3399ff` | Primary actions & accents |
+| `--color-bg` | `#faf8f5` | `#181614` | Fundal pagină (alb cald tip hârtie de meniu / cărbune lemnos închis) |
+| `--color-surface` | `#ffffff` | `#23201d` | Carduri preparate, tichete comenzi, panouri modale |
+| `--color-surface-subtle` | `#f2eee9` | `#2d2925` | Fundal subtil pentru ingrediente, selecții, badge-uri neutre |
+| `--color-border` | `#e2dcd4` | `#3d3731` | Linii despărțitoare, margini carduri și input-uri |
+| `--color-text` | `#241e19` | `#f4eee7` | Text principal (contrast ridicat, nuanță cărbune/cafea prăjită) |
+| `--color-text-muted` | `#6e645a` | `#aba095` | Text secundar, descrieri, etichete detalii (contrast ≥ 4.5:1) |
+| `--color-primary` | `#8c3a1e` | `#e07a52` | Butoane acțiune principală, accente rustice cărămizii / teracotă |
+| `--color-primary-hover` | `#732f18` | `#ea8e69` | Stare hover/active buton primar |
+| `--color-secondary` | `#4a5548` | `#889c84` | Accente secundare neutre-vegetale (verde măslină / salvie) |
+| `--color-accent` | `#c97a2b` | `#df9547` | Accente calde (chihlimbar / auriu cald) pentru prețuri și atenționări |
+| `--color-success` | `#2d6a4f` | `#52b788` | Stare preparat disponibil / comanda marcată ca „Gata” |
+| `--color-warning` | `#b45309` | `#fbbf24` | Alertă vizuală pentru comandă întârziată (>10-15 min) |
+| `--color-danger` | `#b91c1c` | `#f87171` | Stare preparat indisponibil (stoc epuizat) / erori sistem |
 
-### Typography
-| Token | Family | Size / line height | Weight | Use |
+### Typography (Combinație Serif Tradițional + Sans-Serif Modern)
+| Token | Family | Size / Line height | Weight | Use |
 |---|---|---|---|---|
-| `--font-sans` | system-ui, sans-serif | 16px / 1.5 | 400 | Body text |
-| `--font-heading` | system-ui, sans-serif | 24px / 1.25 | 600 | Main heading |
+| `--font-heading` | `'Merriweather', 'Lora', Georgia, serif` | 30px / 1.25 | 700 | Titlu principal ecran (ex. „Kon Tiki — Meniu Digital”) |
+| `--font-subheading` | `'Merriweather', 'Lora', Georgia, serif` | 22px / 1.3 | 600 | Categorii meniu, titluri de secțiuni |
+| `--font-dish-title` | `'Merriweather', 'Lora', Georgia, serif` | 18px / 1.35 | 600 | Denumiri preparate (ex. „Ciorbă de burtă”) |
+| `--font-sans` | `'Inter', system-ui, sans-serif` | 16px / 1.5 | 400 | Text general conținut, descrieri preparate |
+| `--font-sans-bold` | `'Inter', system-ui, sans-serif` | 16px / 1.5 | 600 | Prețuri, etichete butoane, roluri |
+| `--font-sans-sm` | `'Inter', system-ui, sans-serif` | 14px / 1.4 | 400 | Ingrediente rețetă, opțiuni extra |
+| `--font-sans-xs` | `'Inter', system-ui, sans-serif` | 12px / 1.3 | 500 | Badge-uri alergeni, stoc disponibil, cronometru KDS |
 
-### Spacing
-| Token | Value |
-|---|---|
-| `--space-sm` | 8px |
-| `--space-md` | 16px |
-| `--space-lg` | 24px |
-
-### Radius, shadow, motion
+### Spacing (Scară de 8px / bază 4px)
 | Token | Value | Use |
 |---|---|---|
-| `--radius-md` | 6px | Controls and cards |
+| `--space-2xs` | 4px | Spațiere compactă între tag-uri, padding badge-uri |
+| `--space-xs` | 8px | Spațiu între etichetă și input, icon și text |
+| `--space-sm` | 12px | Padding intern butoane mici, spațiere listă ingrediente |
+| `--space-md` | 16px | Padding intern carduri preparate, spațiere standard grile |
+| `--space-lg` | 24px | Distanță între secțiuni, margini containere mobile |
+| `--space-xl` | 32px | Distanță între categorii mari de meniu |
+| `--space-2xl` | 48px | Spațiere antet și separatori majori ecran |
 
-### Breakpoints / window sizes
-| Name | Min | Max |
+### Radius, Shadow & Motion
+| Token | Value | Use |
 |---|---|---|
-| mobile | 320px | 767px |
-| desktop | 768px | — |
+| `--radius-sm` | 4px | Badge-uri mici (alergeni, număr masă) |
+| `--radius-md` | 8px | Butoane acțiune, câmpuri formular, tichete bucătărie |
+| `--radius-lg` | 12px | Carduri preparate, ferestre modale, panou încasare |
+| `--radius-full` | 9999px | Selector rotunjit pentru cele 12 mese, indicatori stare |
+| `--shadow-card` | `0 2px 8px rgba(36, 30, 25, 0.06)` | Umbră caldă discretă pe fundal deschis |
+| `--shadow-modal` | `0 12px 28px rgba(36, 30, 25, 0.16)` | Umbră ferestre modale și meniuri flotante |
+| `--transition-fast` | `150ms ease-in-out` | Tranziții hover butoane, schimbare stare |
+| `--transition-normal` | `250ms ease-in-out` | Desfășurare detalii preparat, afișare modală |
 
-## Hard-coded values found (to migrate)
-| path:line | Value | Should be |
-|---|---|---|
+### Breakpoints
+| Name | Min | Max | Target |
+|---|---|---|---|
+| `mobile` | 320px | 767px | Ecran Client QR (optimizat pentru smartphone la masă) |
+| `tablet` | 768px | 1024px | Ecran Ospătar (tabletă de sală) / Ecran Casă |
+| `desktop` | 1025px | — | Kitchen Display System (KDS Bucătărie) & Monitor Sală |

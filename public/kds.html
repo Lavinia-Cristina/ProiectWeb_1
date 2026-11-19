@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kitchen Display System (KDS) · Restaurant Kon Tiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+  <style>
+    body {
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .kds-viewport {
+      width: 100%;
+      max-width: 1300px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 85vh;
+    }
+    .kds-navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-md) var(--space-lg);
+      border-bottom: 2px solid var(--color-border);
+      background: var(--color-surface);
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+    .kds-title-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .kds-title {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .realtime-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(45, 106, 79, 0.15);
+      color: var(--color-success);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-success);
+      box-shadow: 0 0 0 0 rgba(45, 106, 79, 0.8);
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(45, 106, 79, 0.7); }
+      70% { box-shadow: 0 0 0 6px rgba(45, 106, 79, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(45, 106, 79, 0); }
+    }
+    .kds-stats {
+      display: flex;
+      gap: var(--space-lg);
+      font-size: 14px;
+      font-weight: 600;
+      align-items: center;
+    }
+    .stat-delayed { color: var(--color-warning); }
+    .stat-critical { color: var(--color-danger); }
+    .tickets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: var(--space-md);
+      padding: var(--space-lg);
+      background: var(--color-bg);
+      flex: 1;
+      overflow-y: auto;
+    }
+    .kds-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      transition: all var(--transition-fast);
+    }
+    .kds-card.warning {
+      border: 2px solid var(--color-warning);
+      box-shadow: 0 0 12px rgba(180, 83, 9, 0.35);
+    }
+    .kds-card.critical {
+      border: 2px solid var(--color-danger);
+      box-shadow: 0 0 16px rgba(185, 28, 28, 0.45);
+      animation: alertPulse 2s infinite;
+    }
+    @keyframes alertPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.01); }
+    }
+    .card-top {
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-surface-subtle);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .kds-card.warning .card-top {
+      background: rgba(180, 83, 9, 0.15);
+      border-bottom-color: var(--color-warning);
+    }
+    .kds-card.critical .card-top {
+      background: rgba(185, 28, 28, 0.2);
+      border-bottom-color: var(--color-danger);
+    }
+    .table-indicator {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .timer-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+    }
+    .timer-badge.warning {
+      color: var(--color-warning);
+      border-color: var(--color-warning);
+    }
+    .timer-badge.danger {
+      color: var(--color-danger);
+      border-color: var(--color-danger);
+    }
+    .card-body {
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      flex: 1;
+    }
+    .order-item-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed var(--color-border);
+    }
+    .dish-title {
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .extras-tag {
+      font-size: 12px;
+      color: var(--color-primary);
+      margin-top: 2px;
+    }
+    .card-actions {
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-surface-subtle);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      gap: var(--space-sm);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar Navigatie -->
+  <nav class="top-navbar" style="max-width: 1300px; border-radius: var(--radius-md) var(--radius-md) 0 0; margin-bottom: 10px;">
+    <div style="display:flex; align-items:center; gap:var(--space-md);">
+      <a href="/" class="brand-title">🍲 Restaurant Kon Tiki</a>
+      <span class="badge badge-info">Kitchen Display</span>
+    </div>
+    <div class="nav-links">
+      <a href="/waiter.html" class="nav-link">Ospătar</a>
+      <a href="/cashier.html" class="nav-link">Casă</a>
+      <a href="/monitor.html" class="nav-link">Monitor</a>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută tema">
+        <span id="theme-toggle-label">☀️ Temă</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="kds-viewport">
+
+    <!-- KDS Header Bar -->
+    <header class="kds-navbar">
+      <div class="kds-title-group">
+        <h1 class="kds-title">Kitchen Display System (KDS)</h1>
+        <div class="realtime-badge">
+          <div class="pulse-dot"></div>
+          <span>SSE Activ (Fără Polling)</span>
+        </div>
+      </div>
+      <div class="kds-stats">
+        <div>Total în lucru: <span id="stat-total-active" style="color:var(--color-primary);">0</span></div>
+        <div class="stat-delayed">Atenționare (10-15m): <span id="stat-warning-count">0</span></div>
+        <div class="stat-critical">Critice (>15m): <span id="stat-critical-count">0</span></div>
+      </div>
+    </header>
+
+    <!-- Tickets Grid -->
+    <main class="tickets-grid" id="kds-tickets-container">
+      <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--color-text-muted);">
+        Nu există comenzi active la bucătărie în acest moment. Comenzile noi vor apărea instantaneu aici.
+      </div>
+    </main>
+
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    let activeKdsOrders = [];
+
+    // Sintetizator sonor pentru alertă bucătărie (Web Audio API)
+    function playKitchenChime() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.8);
+      } catch (e) {
+        console.warn('Audio chime indisponibil:', e);
+      }
+    }
+
+    async function loadKdsOrders() {
+      try {
+        const res = await fetch('/api/orders?activeOnly=true');
+        const data = await res.json();
+        if (data.success) {
+          // Bucătăria vede comenzile 'plasată' și 'în preparare'
+          activeKdsOrders = data.orders.filter(o => o.status === 'plasată' || o.status === 'în preparare');
+          renderKdsTickets();
+        }
+      } catch (err) {
+        console.error('Eroare încărcare KDS:', err);
+      }
+    }
+
+    function renderKdsTickets() {
+      const container = document.getElementById('kds-tickets-container');
+      const now = Date.now();
+
+      if (activeKdsOrders.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--color-text-muted);">Nu există comenzi active la bucătărie. Odihnă binemeritată!</div>';
+        document.getElementById('stat-total-active').textContent = '0';
+        document.getElementById('stat-warning-count').textContent = '0';
+        document.getElementById('stat-critical-count').textContent = '0';
+        return;
+      }
+
+      // Calcul durată și clasificare alertă conform PATTERN-002 & PATTERN-003
+      let warningCount = 0;
+      let criticalCount = 0;
+
+      const scoredOrders = activeKdsOrders.map(ord => {
+        const elapsedSec = Math.floor((now - ord.placed_at) / 1000);
+        const elapsedMin = Math.floor(elapsedSec / 60);
+
+        let alertLevel = 'normal';
+        let alertScore = 0;
+
+        if (elapsedMin >= 15) {
+          alertLevel = 'critical';
+          alertScore = 200 + elapsedMin;
+          criticalCount++;
+        } else if (elapsedMin >= 10) {
+          alertLevel = 'warning';
+          alertScore = 100 + elapsedMin;
+          warningCount++;
+        } else {
+          alertScore = elapsedMin;
+        }
+
+        return {
+          ...ord,
+          elapsedSec,
+          elapsedMin,
+          alertLevel,
+          alertScore
+        };
+      });
+
+      // PATTERN-003: Auto-escaladare - ordonare prioritară (cele critice și în atenționare primele)
+      scoredOrders.sort((a, b) => b.alertScore - a.alertScore);
+
+      document.getElementById('stat-total-active').textContent = scoredOrders.length;
+      document.getElementById('stat-warning-count').textContent = warningCount;
+      document.getElementById('stat-critical-count').textContent = criticalCount;
+
+      container.innerHTML = '';
+
+      for (const ord of scoredOrders) {
+        const card = document.createElement('article');
+        card.className = `kds-card ${ord.alertLevel}`;
+
+        const minutes = Math.floor(ord.elapsedSec / 60);
+        const seconds = ord.elapsedSec % 60;
+        const timeDisplay = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        let timerClass = '';
+        let alertBadgeText = '';
+        if (ord.alertLevel === 'critical') {
+          timerClass = 'danger';
+          alertBadgeText = '<span class="badge badge-danger">CRITIC: > 15 min</span>';
+        } else if (ord.alertLevel === 'warning') {
+          timerClass = 'warning';
+          alertBadgeText = '<span class="badge badge-warning">Atenționare: 10-15 min</span>';
+        }
+
+        // Articole comandate
+        const itemsHtml = ord.items.map(it => {
+          const extrasStr = (it.extras && it.extras.length > 0) 
+            ? `<div class="extras-tag">+ ${it.extras.map(e => e.name).join(', ')}</div>` 
+            : '';
+          return `
+            <div class="order-item-line">
+              <div>
+                <div class="dish-title">${it.quantity}x ${it.dish_name || it.dish_id}</div>
+                ${extrasStr}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Butoane acțiune bucătar
+        let actionButtons = '';
+        if (ord.status === 'plasată') {
+          actionButtons = `
+            <button class="btn btn-secondary" style="flex:1;" onclick="updateKdsStatus('${ord.id}', 'în preparare')">
+              👨‍🍳 Începe Prepararea
+            </button>
+            <button class="btn btn-success" style="flex:1;" onclick="updateKdsStatus('${ord.id}', 'gata')">
+              ✓ Gata Direct
+            </button>
+          `;
+        } else if (ord.status === 'în preparare') {
+          actionButtons = `
+            <button class="btn btn-success" style="flex:1; padding: 12px;" onclick="updateKdsStatus('${ord.id}', 'gata')">
+              ✓ Gata de Servire (Trimite Ospătar)
+            </button>
+          `;
+        }
+
+        card.innerHTML = `
+          <div>
+            <div class="card-top">
+              <div class="table-indicator">Masa ${ord.table_number}</div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                ${alertBadgeText}
+                <div class="timer-badge ${timerClass}">⏱ ${timeDisplay}</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div style="font-size:12px; color:var(--color-text-muted); margin-bottom:4px;">
+                Comandă #${ord.id.slice(-6)} · Stare: <strong>${ord.status}</strong>
+              </div>
+              ${itemsHtml}
+            </div>
+          </div>
+          <div class="card-actions">
+            ${actionButtons}
+          </div>
+        `;
+
+        container.appendChild(card);
+      }
+    }
+
+    async function updateKdsStatus(orderId, newStatus) {
+      try {
+        const res = await fetch(`/api/orders/${orderId}/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✓ Comandă #${orderId.slice(-6)} marcată ca "${newStatus}"`, 'success');
+          loadKdsOrders();
+        }
+      } catch (err) {
+        showToast('Eroare actualizare stare bucătărie', 'error');
+      }
+    }
+
+    // Cronometru live actualizat la fiecare secundă
+    setInterval(() => {
+      if (activeKdsOrders.length > 0) {
+        renderKdsTickets();
+      }
+    }, 1000);
+
+    loadKdsOrders();
+
+    // Actualizări în timp real via SSE (D-002)
+    sseClient.on('order:new', (ord) => {
+      playKitchenChime();
+      showToast(`🔔 Comandă nouă pentru Masa ${ord.table_number}!`, 'warning');
+      loadKdsOrders();
+    });
+    sseClient.on('order:status', () => loadKdsOrders());
+    sseClient.on('payment:done', () => loadKdsOrders());
+  </script>
+</body>
+</html>

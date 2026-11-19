@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DS-kt-client-menu · Meniu Digital Client</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #faf8f5;
+      --color-surface: #ffffff;
+      --color-surface-subtle: #f2eee9;
+      --color-border: #e2dcd4;
+      --color-text: #241e19;
+      --color-text-muted: #6e645a;
+      --color-primary: #8c3a1e;
+      --color-primary-hover: #732f18;
+      --color-secondary: #4a5548;
+      --color-accent: #c97a2b;
+      --color-success: #2d6a4f;
+      --color-warning: #b45309;
+      --color-danger: #b91c1c;
+
+      --font-heading: 'Merriweather', Georgia, serif;
+      --font-subheading: 'Merriweather', Georgia, serif;
+      --font-dish-title: 'Merriweather', Georgia, serif;
+      --font-sans: 'Inter', system-ui, sans-serif;
+
+      --space-2xs: 4px;
+      --space-xs: 8px;
+      --space-sm: 12px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+
+      --shadow-card: 0 2px 8px rgba(36, 30, 25, 0.06);
+      --shadow-modal: 0 12px 28px rgba(36, 30, 25, 0.16);
+      --transition-fast: 150ms ease-in-out;
+    }
+
+    [data-theme="dark"] {
+      --color-bg: #181614;
+      --color-surface: #23201d;
+      --color-surface-subtle: #2d2925;
+      --color-border: #3d3731;
+      --color-text: #f4eee7;
+      --color-text-muted: #aba095;
+      --color-primary: #e07a52;
+      --color-primary-hover: #ea8e69;
+      --color-secondary: #889c84;
+      --color-accent: #df9547;
+      --color-success: #52b788;
+      --color-warning: #fbbf24;
+      --color-danger: #f87171;
+      --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.35);
+      --shadow-modal: 0 12px 28px rgba(0, 0, 0, 0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-md);
+      min-height: 100vh;
+    }
+
+    /* Frame Bar for Figma Inspection */
+    .figma-frame-header {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-md);
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+    .figma-tag {
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .theme-toggle-btn {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--color-text);
+      min-height: 28px;
+    }
+
+    /* Device Container: Mobile (375px) */
+    .device-viewport {
+      width: 100%;
+      max-width: 412px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 820px;
+    }
+
+    /* Header */
+    .app-header {
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface);
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .restaurant-title {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--color-primary);
+      letter-spacing: -0.5px;
+    }
+    .table-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      background: var(--color-surface-subtle);
+      padding: var(--space-2xs) var(--space-sm);
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-top: var(--space-2xs);
+      border: 1px solid var(--color-border);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--color-success);
+    }
+
+    /* Category Navigation */
+    .nav-categories {
+      display: flex;
+      overflow-x: auto;
+      gap: var(--space-xs);
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface);
+      scrollbar-width: none;
+    }
+    .nav-categories::-webkit-scrollbar { display: none; }
+    .cat-chip {
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-full);
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text);
+      white-space: nowrap;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .cat-chip.active {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+
+    /* Section & Dish Cards */
+    .content-area {
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .section-title {
+      font-family: var(--font-subheading);
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+      color: var(--color-text);
+    }
+
+    .dish-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      position: relative;
+    }
+    .dish-card.unavailable {
+      opacity: 0.72;
+      border-left: 4px solid var(--color-danger);
+    }
+    .dish-card.available {
+      border-left: 4px solid var(--color-success);
+    }
+
+    .dish-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--space-xs);
+    }
+    .dish-name {
+      font-family: var(--font-dish-title);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .dish-price {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--color-accent);
+      white-space: nowrap;
+    }
+    .dish-desc {
+      font-size: 14px;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+    }
+
+    /* Recipe & Extras info */
+    .recipe-meta {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      background: var(--color-surface-subtle);
+      padding: var(--space-2xs) var(--space-xs);
+      border-radius: var(--radius-sm);
+    }
+    .allergens-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2xs);
+      margin-top: var(--space-2xs);
+    }
+    .allergen-badge {
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+    }
+
+    .stock-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      align-self: flex-start;
+    }
+    .stock-badge.in-stock {
+      background: rgba(45, 106, 79, 0.12);
+      color: var(--color-success);
+    }
+    .stock-badge.out-of-stock {
+      background: rgba(185, 28, 28, 0.12);
+      color: var(--color-danger);
+    }
+
+    /* Order Status Floating Bar */
+    .order-status-bar {
+      margin-top: auto;
+      padding: var(--space-md);
+      background: var(--color-surface-subtle);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-link {
+      color: var(--color-primary);
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Figma Frame Identifier -->
+  <div class="figma-frame-header">
+    <span>Frame: <span class="figma-tag">DS-kt-client-menu · Meniu Digital Client</span></span>
+    <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută modul vizual">Mod Luminos / Întunecat</button>
+  </div>
+
+  <!-- Mobile Viewport Container (375-412px) -->
+  <div class="device-viewport">
+    
+    <header class="app-header">
+      <h1 class="restaurant-title">Restaurant Kon Tiki</h1>
+      <div class="table-banner">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span>Masă activă: <strong>Masa 4</strong></span>
+      </div>
+    </header>
+
+    <nav class="nav-categories" aria-label="Categorii meniu">
+      <a href="#ciorbe" class="cat-chip active">Ciorbe</a>
+      <a href="#garnituri" class="cat-chip">Garnituri</a>
+      <a href="#preparate" class="cat-chip">Feluri calde</a>
+      <a href="#bauturi" class="cat-chip">Băuturi</a>
+    </nav>
+
+    <main class="content-area">
+      <section id="ciorbe">
+        <h2 class="section-title">Ciorbe Tradiționale</h2>
+
+        <!-- Preparat 1: Ciorba de burta (In stoc) -->
+        <article class="dish-card available">
+          <div class="dish-header">
+            <h3 class="dish-name">Ciorbă de burtă</h3>
+            <span class="dish-price">28,00 lei</span>
+          </div>
+          <p class="dish-desc">Preparată după rețeta tradițională din Sibiu, servită fierbinte cu smântână și mujdei de usturoi.</p>
+          <div class="recipe-meta">
+            <strong>Rețetă:</strong> 1 porție burtă vită, 1 cupă smântână, 1 cupă oțet, 1 cupă usturoi, max. 1 coșuleț pâine.
+          </div>
+          <div class="allergens-row" aria-label="Alergeni">
+            <span class="allergen-badge">Lactoză (lapte)</span>
+            <span class="allergen-badge">Gluten</span>
+            <span class="allergen-badge">Țelină</span>
+          </div>
+          <div class="stock-badge in-stock">
+            <span aria-hidden="true">✓</span> Disponibil (Stoc confirmat)
+          </div>
+        </article>
+
+        <!-- Preparat 2: Ciorba taraneasca (Stoc epuizat din cauza lipsei carnii de vita) -->
+        <article class="dish-card unavailable" style="margin-top: var(--space-sm);">
+          <div class="dish-header">
+            <h3 class="dish-name">Ciorbă țărănească de văcuță</h3>
+            <span class="dish-price">26,00 lei</span>
+          </div>
+          <p class="dish-desc">Legume proaspete de grădină fierte lent cu cuburi fragede de carne de mânzat și leuștean.</p>
+          <div class="recipe-meta">
+            <strong>Rețetă:</strong> 1 porție carne vită, 1 porție mix legume, 1 cupă borș.
+          </div>
+          <div class="allergens-row" aria-label="Alergeni">
+            <span class="allergen-badge">Țelină</span>
+          </div>
+          <div class="stock-badge out-of-stock">
+            <span aria-hidden="true">✕</span> Indisponibil momentan (Stoc epuizat ingredient)
+          </div>
+        </article>
+      </section>
+
+      <section id="garnituri" style="margin-top: var(--space-md);">
+        <h2 class="section-title">Garnituri & Extra</h2>
+
+        <!-- Preparat 3: Cartofi cu branza -->
+        <article class="dish-card available">
+          <div class="dish-header">
+            <h3 class="dish-name">Cartofi cu brânză rasă</h3>
+            <span class="dish-price">16,00 lei</span>
+          </div>
+          <p class="dish-desc">Cartofi aurii rumeniți cu telemea proaspătă de oaie din Mărginimea Sibiului.</p>
+          <div class="recipe-meta">
+            <strong>Rețetă:</strong> 1 porție cartofi, 1 porție telemea. Extra disponibil: brânză suplimentară.
+          </div>
+          <div class="allergens-row" aria-label="Alergeni">
+            <span class="allergen-badge">Lactoză</span>
+          </div>
+          <div class="stock-badge in-stock">
+            <span aria-hidden="true">✓</span> Disponibil (18 porții posibile)
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <!-- Footer / Link catre starea comenzii -->
+    <footer class="order-status-bar">
+      <div>
+        <div style="font-size: 12px; color: var(--color-text-muted);">Aveți o comandă plasată?</div>
+        <div style="font-size: 14px; font-weight: 600;">Comandă activă #104</div>
+      </div>
+      <a href="DS-kt-order-status.html" class="status-link">
+        <span>Vezi stadiul la masă</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    </footer>
+
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+    }
+  </script>
+</body>
+</html>

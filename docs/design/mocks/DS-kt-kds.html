@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DS-kt-kds · Kitchen Display System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #faf8f5;
+      --color-surface: #ffffff;
+      --color-surface-subtle: #f2eee9;
+      --color-border: #e2dcd4;
+      --color-text: #241e19;
+      --color-text-muted: #6e645a;
+      --color-primary: #8c3a1e;
+      --color-primary-hover: #732f18;
+      --color-secondary: #4a5548;
+      --color-accent: #c97a2b;
+      --color-success: #2d6a4f;
+      --color-warning: #b45309;
+      --color-danger: #b91c1c;
+
+      --font-heading: 'Merriweather', Georgia, serif;
+      --font-subheading: 'Merriweather', Georgia, serif;
+      --font-dish-title: 'Merriweather', Georgia, serif;
+      --font-sans: 'Inter', system-ui, sans-serif;
+
+      --space-2xs: 4px;
+      --space-xs: 8px;
+      --space-sm: 12px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+
+      --shadow-card: 0 2px 8px rgba(36, 30, 25, 0.06);
+      --shadow-modal: 0 12px 28px rgba(36, 30, 25, 0.16);
+      --transition-fast: 150ms ease-in-out;
+    }
+
+    [data-theme="dark"] {
+      --color-bg: #181614;
+      --color-surface: #23201d;
+      --color-surface-subtle: #2d2925;
+      --color-border: #3d3731;
+      --color-text: #f4eee7;
+      --color-text-muted: #aba095;
+      --color-primary: #e07a52;
+      --color-primary-hover: #ea8e69;
+      --color-secondary: #889c84;
+      --color-accent: #df9547;
+      --color-success: #52b788;
+      --color-warning: #fbbf24;
+      --color-danger: #f87171;
+      --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.35);
+      --shadow-modal: 0 12px 28px rgba(0, 0, 0, 0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-md);
+      min-height: 100vh;
+    }
+
+    .figma-frame-header {
+      width: 100%;
+      max-width: 1240px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-md);
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+    .figma-tag { font-weight: 700; color: var(--color-primary); }
+    .theme-toggle-btn {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--color-text);
+    }
+
+    /* KDS Viewport Desktop (1240px) */
+    .kds-viewport {
+      width: 100%;
+      max-width: 1240px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 780px;
+    }
+
+    /* Top KDS Bar */
+    .kds-navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-md) var(--space-lg);
+      border-bottom: 2px solid var(--color-border);
+      background: var(--color-surface);
+    }
+    .kds-title-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .kds-title {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .realtime-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(45, 106, 79, 0.15);
+      color: var(--color-success);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-success);
+      box-shadow: 0 0 0 0 rgba(45, 106, 79, 0.8);
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(45, 106, 79, 0.7); }
+      70% { box-shadow: 0 0 0 6px rgba(45, 106, 79, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(45, 106, 79, 0); }
+    }
+
+    .kds-stats {
+      display: flex;
+      gap: var(--space-lg);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .stat-delayed {
+      color: var(--color-warning);
+    }
+
+    /* Tickets Grid */
+    .tickets-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      padding: var(--space-lg);
+      background: var(--color-bg);
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* Standard Ticket Card */
+    .kds-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .kds-card.delayed {
+      border: 2px solid var(--color-warning);
+      box-shadow: 0 0 12px rgba(180, 83, 9, 0.25);
+    }
+    .kds-card.urgent {
+      border: 2px solid var(--color-danger);
+    }
+
+    .card-top {
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-surface-subtle);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .kds-card.delayed .card-top {
+      background: rgba(180, 83, 9, 0.12);
+      border-bottom-color: var(--color-warning);
+    }
+
+    .table-indicator {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .timer-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+    }
+    .timer-badge.warning {
+      color: var(--color-warning);
+      border-color: var(--color-warning);
+    }
+    .timer-badge.danger {
+      color: var(--color-danger);
+      border-color: var(--color-danger);
+      animation: blink 1s infinite alternate;
+    }
+    @keyframes blink { from { opacity: 1; } to { opacity: 0.6; } }
+
+    .card-content {
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      flex: 1;
+    }
+    .ticket-dish-item {
+      padding-bottom: var(--space-xs);
+      border-bottom: 1px dashed var(--color-border);
+    }
+    .dish-qty-name {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-xs);
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .dish-specs {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+      padding-left: 20px;
+    }
+    .extra-tag-kds {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-primary);
+      background: rgba(140, 58, 30, 0.1);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      margin-top: 3px;
+      margin-left: 20px;
+    }
+
+    .card-actions {
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-surface-subtle);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      gap: var(--space-xs);
+    }
+    .btn-kds-ready {
+      flex: 1;
+      background: var(--color-success);
+      color: #ffffff;
+      border: none;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+    }
+    .btn-kds-ready:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+
+  <div class="figma-frame-header">
+    <span>Frame: <span class="figma-tag">DS-kt-kds · Kitchen Display System (Bucătărie)</span></span>
+    <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută modul vizual">Mod Luminos / Întunecat</button>
+  </div>
+
+  <div class="kds-viewport">
+    
+    <header class="kds-navbar">
+      <div class="kds-title-group">
+        <h1 class="kds-title">Bucătărie Kon Tiki • Ecran Comenzi Active</h1>
+        <div class="realtime-badge">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          <span>SSE / WebSocket Conectat (Fără Refresh)</span>
+        </div>
+      </div>
+      
+      <div class="kds-stats">
+        <span>Comenzi în lucru: <strong>3</strong></span>
+        <span class="stat-delayed">Comenzi întârziate (>10 min): <strong>1</strong></span>
+      </div>
+    </header>
+
+    <main class="tickets-grid">
+      
+      <!-- Tichet 1: Comanda Intarziata (12:40 min - depaseste pragul de 10 min) -->
+      <article class="kds-card delayed">
+        <div class="card-top">
+          <div class="table-indicator" style="color: var(--color-warning);">MASA 2 • #102</div>
+          <div class="timer-badge warning">
+            <span aria-hidden="true">⚠️</span>
+            <span>12:45 min (Întârziată)</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="ticket-dish-item">
+            <div class="dish-qty-name">
+              <span>2x</span>
+              <span>Ciorbă de burtă</span>
+            </div>
+            <div class="dish-specs">Compoziție: 2 porții burtă, 2 cupe smântână, 2 cupe oțet, 2 cupe usturoi.</div>
+            <div class="extra-tag-kds">+ EXTRA: 2 cupe smântână suplimentară</div>
+            <div class="extra-tag-kds">+ EXTRA: Ardei murați în plus</div>
+          </div>
+          <div class="ticket-dish-item">
+            <div class="dish-qty-name">
+              <span>1x</span>
+              <span>Coșuleț pâine de casă</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-kds-ready">
+            <span aria-hidden="true">✓</span> Marchează Comandă Gata
+          </button>
+        </div>
+      </article>
+
+      <!-- Tichet 2: Comanda in Timp Normal (05:20 min) -->
+      <article class="kds-card">
+        <div class="card-top">
+          <div class="table-indicator">MASA 4 • #104</div>
+          <div class="timer-badge">
+            <span aria-hidden="true">⏱</span>
+            <span>05:20 min</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="ticket-dish-item">
+            <div class="dish-qty-name">
+              <span>1x</span>
+              <span>Ciorbă de burtă</span>
+            </div>
+            <div class="dish-specs">Compoziție: 1 porție burtă, 1 cupă smântână, 1 cupă oțet, 1 cupă usturoi.</div>
+            <div class="extra-tag-kds">+ EXTRA: 1 cupă smântână în plus</div>
+            <div class="extra-tag-kds">+ EXTRA: Ardei murați</div>
+          </div>
+          <div class="ticket-dish-item">
+            <div class="dish-qty-name">
+              <span>1x</span>
+              <span>Cartofi cu brânză rasă</span>
+            </div>
+            <div class="dish-specs">Compoziție: 1 porție cartofi, 1 porție telemea oaie.</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-kds-ready">
+            <span aria-hidden="true">✓</span> Marchează Comandă Gata
+          </button>
+        </div>
+      </article>
+
+      <!-- Tichet 3: Comanda Proaspat Plasata (01:10 min) -->
+      <article class="kds-card">
+        <div class="card-top">
+          <div class="table-indicator">MASA 8 • #105</div>
+          <div class="timer-badge">
+            <span aria-hidden="true">⏱</span>
+            <span>01:10 min</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="ticket-dish-item">
+            <div class="dish-qty-name">
+              <span>2x</span>
+              <span>Cartofi cu brânză rasă</span>
+            </div>
+            <div class="dish-specs">Compoziție: 2 porții cartofi, 2 porții telemea.</div>
+            <div class="extra-tag-kds">+ EXTRA: Brânză suplimentară la ambele</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-kds-ready">
+            <span aria-hidden="true">✓</span> Marchează Comandă Gata
+          </button>
+        </div>
+      </article>
+
+    </main>
+
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+    }
+  </script>
+</body>
+</html>

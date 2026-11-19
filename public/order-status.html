@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stadiul Comenzii la Masă · Restaurant Kon Tiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-md);
+      min-height: 100vh;
+    }
+    .mobile-frame {
+      width: 100%;
+      max-width: 440px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-modal);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 85vh;
+    }
+    .status-header {
+      background: var(--color-surface-subtle);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-lg) var(--space-md) var(--space-md);
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-xs);
+    }
+    .table-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2xs);
+      background: var(--color-primary);
+      color: #ffffff;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .screen-title {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      color: var(--color-primary);
+    }
+    .screen-desc {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+    .content-area {
+      padding: var(--space-md);
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    /* Stepper Vertical */
+    .stepper {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+    }
+    .step-item {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: flex-start;
+      position: relative;
+    }
+    .step-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 30px;
+      bottom: -16px;
+      width: 2px;
+      background: var(--color-border);
+    }
+    .step-item.completed:not(:last-child)::after {
+      background: var(--color-success);
+    }
+    .step-dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--color-surface);
+      border: 2px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      z-index: 2;
+    }
+    .step-item.active .step-dot {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #ffffff;
+    }
+    .step-item.completed .step-dot {
+      background: var(--color-success);
+      border-color: var(--color-success);
+      color: #ffffff;
+    }
+    .step-info {
+      flex-grow: 1;
+    }
+    .step-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .step-desc {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+    .step-time {
+      font-size: 11px;
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+    /* Lista articolelor comenzii */
+    .order-box {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+    }
+    .order-box-title {
+      font-family: var(--font-heading);
+      font-size: 15px;
+      margin-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 6px;
+    }
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 4px 0;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 15px;
+      font-weight: 700;
+      border-top: 1px solid var(--color-border);
+      padding-top: var(--space-sm);
+      margin-top: var(--space-sm);
+      color: var(--color-primary);
+    }
+    .status-footer {
+      background: var(--color-surface-subtle);
+      border-top: 1px solid var(--color-border);
+      padding: var(--space-sm) var(--space-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-frame">
+
+    <header class="status-header">
+      <div class="header-top">
+        <div class="table-indicator">
+          <span>📍</span>
+          <span id="header-table-badge">Masa 1</span>
+        </div>
+        <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută tema">
+          <span id="theme-toggle-label">🌙 Temă</span>
+        </button>
+      </div>
+      <h1 class="screen-title">Stadiul Comenzii</h1>
+      <p class="screen-desc">Actualizat automat în timp real de la bucătărie.</p>
+    </header>
+
+    <main class="content-area">
+
+      <!-- Stepper Etape Preparare -->
+      <div class="stepper" id="stepper-container">
+        
+        <!-- Pas 1 -->
+        <div class="step-item completed" id="step-plasata">
+          <div class="step-dot">1</div>
+          <div class="step-info">
+            <div class="step-title">Comandă Plasată</div>
+            <div class="step-desc">Înregistrată pe server și transmisă la bucătărie.</div>
+            <div class="step-time" id="time-plasata">✓ Confirmată</div>
+          </div>
+        </div>
+
+        <!-- Pas 2 -->
+        <div class="step-item active" id="step-in-preparare">
+          <div class="step-dot">2</div>
+          <div class="step-info">
+            <div class="step-title">În Preparare la Bucătărie</div>
+            <div class="step-desc">Bucătarul pregătește comanda pe stația de lucru.</div>
+            <div class="step-time" id="time-in-preparare">⏳ În desfășurare</div>
+          </div>
+        </div>
+
+        <!-- Pas 3 -->
+        <div class="step-item" id="step-gata">
+          <div class="step-dot">3</div>
+          <div class="step-info">
+            <div class="step-title">Gata de Servire</div>
+            <div class="step-desc">Mâncarea a fost finalizată și montată pe farfurie.</div>
+            <div class="step-time" id="time-gata">În așteptare</div>
+          </div>
+        </div>
+
+        <!-- Pas 4 -->
+        <div class="step-item" id="step-servita">
+          <div class="step-dot">4</div>
+          <div class="step-info">
+            <div class="step-title">Servită la Masă</div>
+            <div class="step-desc">Ospătarul a adus preparatele. Poftă bună!</div>
+            <div class="step-time" id="time-servita">În așteptare</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Detalii Consum Masă -->
+      <div class="order-box" id="orders-details-box">
+        <div class="order-box-title">Consumație Masă (Consolidată D-006)</div>
+        <div id="items-list">
+          <div style="color:var(--color-text-muted); font-size:13px;">Se verifică comenzile active...</div>
+        </div>
+        <div class="total-row">
+          <span>Total Autoritar Server (D-004)</span>
+          <span id="server-total-val">0,00 lei</span>
+        </div>
+      </div>
+
+    </main>
+
+    <footer class="status-footer">
+      <a href="/client-menu.html" id="back-to-menu-link" class="btn btn-secondary" style="font-size:13px; padding:6px 12px;">
+        ← Înapoi la meniu
+      </a>
+      <button class="btn btn-primary" onclick="loadOrderStatus()" style="font-size:13px; padding:6px 12px;">
+        🔄 Reîmprospătează
+      </button>
+    </footer>
+
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const tableNumber = parseInt(urlParams.get('masa') || '1', 10);
+    document.getElementById('header-table-badge').textContent = `Masa ${tableNumber}`;
+    document.getElementById('back-to-menu-link').href = `/client-menu.html?masa=${tableNumber}`;
+
+    async function loadOrderStatus() {
+      try {
+        const res = await fetch(`/api/orders/table/${tableNumber}`);
+        const data = await res.json();
+        
+        const itemsList = document.getElementById('items-list');
+        const totalSpan = document.getElementById('server-total-val');
+
+        if (!data.success || !data.orders || data.orders.length === 0) {
+          itemsList.innerHTML = '<div style="color:var(--color-text-muted); font-size:13px;">Nu există nicio comandă activă pentru această masă. Puteți plasa o comandă din meniu.</div>';
+          totalSpan.textContent = '0,00 lei';
+          resetStepper();
+          return;
+        }
+
+        // Afișare articole cumulate
+        itemsList.innerHTML = '';
+        let highestStatusRank = 1; // 1: plasată, 2: în preparare, 3: gata, 4: servită, 5: achitată
+
+        for (const ord of data.orders) {
+          // Evaluare status cel mai avansat
+          const rank = getStatusRank(ord.status);
+          if (rank > highestStatusRank) highestStatusRank = rank;
+
+          for (const it of ord.items) {
+            const row = document.createElement('div');
+            row.className = 'item-row';
+            const extrasStr = (it.extras && it.extras.length > 0) ? ` (+ ${it.extras.map(e => e.name).join(', ')})` : '';
+            row.innerHTML = `
+              <span>${it.quantity}x ${it.dish_name || it.dish_id}${extrasStr}</span>
+              <strong>${Number(it.item_price).toFixed(2).replace('.', ',')} lei</strong>
+            `;
+            itemsList.appendChild(row);
+          }
+        }
+
+        totalSpan.textContent = Number(data.total_amount).toFixed(2).replace('.', ',') + ' lei';
+        updateStepper(highestStatusRank);
+
+      } catch (err) {
+        console.error('Eroare încărcare stare:', err);
+      }
+    }
+
+    function getStatusRank(status) {
+      switch (status) {
+        case 'plasată': return 1;
+        case 'în preparare': return 2;
+        case 'gata': return 3;
+        case 'servită': return 4;
+        case 'achitată': return 5;
+        default: return 1;
+      }
+    }
+
+    function resetStepper() {
+      ['step-plasata', 'step-in-preparare', 'step-gata', 'step-servita'].forEach(id => {
+        const el = document.getElementById(id);
+        el.className = 'step-item';
+      });
+    }
+
+    function updateStepper(rank) {
+      resetStepper();
+
+      // Pas 1: Plasată
+      const p1 = document.getElementById('step-plasata');
+      if (rank >= 1) p1.classList.add(rank > 1 ? 'completed' : 'active');
+
+      // Pas 2: În preparare
+      const p2 = document.getElementById('step-in-preparare');
+      if (rank >= 2) p2.classList.add(rank > 2 ? 'completed' : 'active');
+
+      // Pas 3: Gata
+      const p3 = document.getElementById('step-gata');
+      if (rank >= 3) {
+        p3.classList.add(rank > 3 ? 'completed' : 'active');
+        document.getElementById('time-gata').textContent = '✓ Gata de servire!';
+      }
+
+      // Pas 4: Servită
+      const p4 = document.getElementById('step-servita');
+      if (rank >= 4) {
+        p4.classList.add(rank >= 4 ? 'completed' : 'active');
+        document.getElementById('time-servita').textContent = '✓ Servită la masă!';
+      }
+    }
+
+    loadOrderStatus();
+
+    // Actualizare live prin SSE
+    sseClient.on('order:new', (ord) => {
+      if (ord.table_number === tableNumber) loadOrderStatus();
+    });
+    sseClient.on('order:status', (ev) => {
+      loadOrderStatus();
+    });
+    sseClient.on('payment:done', (p) => {
+      if (p.table_number === tableNumber) {
+        showToast('Masa a fost achitată. Vă mulțumim!', 'success');
+        loadOrderStatus();
+      }
+    });
+  </script>
+</body>
+</html>

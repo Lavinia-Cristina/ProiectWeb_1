@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DS-kt-dish-card · Card Preparat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #faf8f5;
+      --color-surface: #ffffff;
+      --color-surface-subtle: #f2eee9;
+      --color-border: #e2dcd4;
+      --color-text: #241e19;
+      --color-text-muted: #6e645a;
+      --color-primary: #8c3a1e;
+      --color-primary-hover: #732f18;
+      --color-secondary: #4a5548;
+      --color-accent: #c97a2b;
+      --color-success: #2d6a4f;
+      --color-warning: #b45309;
+      --color-danger: #b91c1c;
+
+      --font-heading: 'Merriweather', Georgia, serif;
+      --font-dish-title: 'Merriweather', Georgia, serif;
+      --font-sans: 'Inter', system-ui, sans-serif;
+
+      --space-2xs: 4px;
+      --space-xs: 8px;
+      --space-sm: 12px;
+      --space-md: 16px;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --shadow-card: 0 2px 8px rgba(36, 30, 25, 0.06);
+    }
+    [data-theme="dark"] {
+      --color-bg: #181614;
+      --color-surface: #23201d;
+      --color-surface-subtle: #2d2925;
+      --color-border: #3d3731;
+      --color-text: #f4eee7;
+      --color-text-muted: #aba095;
+      --color-primary: #e07a52;
+      --color-accent: #df9547;
+      --color-success: #52b788;
+      --color-danger: #f87171;
+      --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .figma-header {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+    }
+    .component-box {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .dish-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+    .dish-card.available { border-left: 4px solid var(--color-success); }
+    .dish-card.unavailable { border-left: 4px solid var(--color-danger); opacity: 0.75; }
+    .dish-head { display: flex; justify-content: space-between; align-items: baseline; }
+    .dish-title { font-family: var(--font-dish-title); font-size: 18px; font-weight: 600; }
+    .dish-price { font-size: 16px; font-weight: 700; color: var(--color-accent); }
+    .dish-recipe { font-size: 13px; color: var(--color-text-muted); background: var(--color-surface-subtle); padding: 4px 8px; border-radius: var(--radius-sm); }
+    .badge-pill { font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); }
+  </style>
+</head>
+<body>
+  <div class="figma-header">
+    <span>Frame: <strong style="color: var(--color-primary);">DS-kt-dish-card · Card Preparat</strong></span>
+    <button onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='light'?'dark':'light')">Comută Temă</button>
+  </div>
+  <div class="component-box">
+    <div class="dish-card available">
+      <div class="dish-head">
+        <h4 class="dish-title">Ciorbă de burtă</h4>
+        <span class="dish-price">28,00 lei</span>
+      </div>
+      <p style="font-size: 14px; color: var(--color-text-muted);">Rețetă tradițională servită cu smântână și mujdei.</p>
+      <div class="dish-recipe">1 porție burtă, 1 cupă smântână, 1 cupă oțet, 1 cupă usturoi.</div>
+      <div style="display: flex; gap: 4px;">
+        <span class="badge-pill">Lactoză</span>
+        <span class="badge-pill">Gluten</span>
+        <span class="badge-pill" style="color: var(--color-success); border-color: var(--color-success);">✓ În stoc</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
