@@ -389,9 +389,23 @@
     <!-- Header Meniu Digital -->
     <header class="menu-header">
       <div class="restaurant-meta">
-        <div class="table-indicator">
+        <div class="table-indicator" style="display:flex; align-items:center; gap:6px;">
           <span>📍</span>
-          <span id="current-table-label">Masa 1</span>
+          <label for="table-picker" style="font-size:12px; font-weight:700; color:var(--color-primary);">Masa:</label>
+          <select id="table-picker" class="table-select-header" onchange="onSelectTable(this.value)" style="padding:3px 8px; border-radius:var(--radius-sm); border:1px solid var(--color-border); background:var(--color-surface); font-weight:700; font-size:13px; color:var(--color-primary); cursor:pointer;">
+            <option value="1">Masa 1</option>
+            <option value="2">Masa 2</option>
+            <option value="3">Masa 3</option>
+            <option value="4">Masa 4</option>
+            <option value="5">Masa 5</option>
+            <option value="6">Masa 6</option>
+            <option value="7">Masa 7</option>
+            <option value="8">Masa 8</option>
+            <option value="9">Masa 9</option>
+            <option value="10">Masa 10</option>
+            <option value="11">Masa 11</option>
+            <option value="12">Masa 12</option>
+          </select>
         </div>
         <div style="display:flex; gap:6px; align-items:center;">
           <a href="/" class="btn btn-secondary" style="padding:4px 8px; font-size:11px;">Hub</a>
@@ -503,14 +517,82 @@
     </div>
   </div>
 
+  <!-- Modal 3: Personalizare Comandă la Masă (Cantitate & Opțiuni Extra) -->
+  <div class="modal-overlay" id="order-customize-modal" role="dialog" aria-modal="true" aria-labelledby="order-modal-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h2 id="order-modal-title" style="font-family:var(--font-heading); font-size:17px; color:var(--color-primary); margin:0;">
+            Adaugă în Comandă
+          </h2>
+          <div id="order-modal-dish-meta" style="font-size:12px; color:var(--color-text-muted); margin-top:2px;"></div>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="closeOrderModal()" aria-label="Închide fereastra">✕</button>
+      </div>
+      <div class="modal-body" style="display:flex; flex-direction:column; gap:var(--space-md); padding:var(--space-md) 0;">
+        <!-- Selector Cantitate (fără numere negative sau 0) -->
+        <div style="display:flex; align-items:center; justify-content:space-between; background:var(--color-surface-subtle); padding:10px 14px; border-radius:var(--radius-md); border:1px solid var(--color-border);">
+          <span style="font-weight:700; font-size:14px;">Număr Porții:</span>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <button type="button" class="btn btn-secondary" onclick="changeOrderQty(-1)" style="width:34px; height:34px; padding:0; font-size:18px; font-weight:700;">−</button>
+            <span id="order-modal-qty" style="font-size:17px; font-weight:700; min-width:24px; text-align:center;">1</span>
+            <button type="button" class="btn btn-secondary" onclick="changeOrderQty(1)" style="width:34px; height:34px; padding:0; font-size:18px; font-weight:700;">+</button>
+          </div>
+        </div>
+
+        <!-- Opțiuni Extra Disponibile -->
+        <div id="order-modal-extras-section">
+          <div style="font-size:12px; font-weight:700; color:var(--color-text-muted); text-transform:uppercase; margin-bottom:8px;">
+            Opțiuni Extra (consumă stoc):
+          </div>
+          <div id="order-modal-extras-list" style="display:flex; flex-direction:column; gap:6px;">
+            <!-- Populate dinamic -->
+          </div>
+        </div>
+
+        <!-- Indicator Masă & Total -->
+        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--color-border); padding-top:var(--space-sm);">
+          <div>
+            <div style="font-size:11px; color:var(--color-text-muted);">Comandă pentru:</div>
+            <div style="font-size:13px; font-weight:700; color:var(--color-primary);" id="order-modal-table-label">Masa 1</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px; color:var(--color-text-muted);">Total calculat:</div>
+            <div style="font-size:18px; font-weight:700; color:var(--color-primary);" id="order-modal-total-display">0,00 lei</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding: var(--space-sm) var(--space-md); background:var(--color-surface-subtle); border-top:1px solid var(--color-border); display:flex; justify-content:space-between; gap:8px;">
+        <button class="btn btn-secondary" onclick="closeOrderModal()" style="font-size:12px;">Anulează</button>
+        <button class="btn btn-primary" onclick="confirmAndPlaceOrder()" style="font-size:13px; padding:8px 16px;">
+          🚀 Trimite Comanda la Bucătărie
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="/js/app.js"></script>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const tableNumber = parseInt(urlParams.get('masa') || '1', 10);
-    document.getElementById('current-table-label').textContent = `Masa ${tableNumber}`;
+    let tableNumber = parseInt(urlParams.get('masa') || localStorage.getItem('kt_selected_table') || '1', 10);
+    if (isNaN(tableNumber) || tableNumber < 1 || tableNumber > 12) tableNumber = 1;
+
+    const tablePicker = document.getElementById('table-picker');
+    if (tablePicker) tablePicker.value = tableNumber;
     document.getElementById('order-status-link').href = `/order-status.html?masa=${tableNumber}`;
 
+    function onSelectTable(val) {
+      tableNumber = parseInt(val, 10);
+      localStorage.setItem('kt_selected_table', tableNumber);
+      const url = new URL(window.location);
+      url.searchParams.set('masa', tableNumber);
+      window.history.replaceState({}, '', url);
+      document.getElementById('order-status-link').href = `/order-status.html?masa=${tableNumber}`;
+      showToast(`Ați selectat Masa ${tableNumber}`, 'info');
+    }
+
     let allMenuData = [];
+    let allExtrasData = [];
     let allergensGuide = [];
     let currentCategory = 'all';
 
@@ -537,6 +619,7 @@
         const data = await res.json();
         if (data.success) {
           allMenuData = data.menu;
+          allExtrasData = data.extras || [];
           renderCategoryTabs();
           filterMenu();
         }
@@ -643,7 +726,7 @@
             : `<span class="stock-tag out"><span>✕</span> Indisponibil momentan</span>`;
 
           const actionBtn = dish.is_available
-            ? `<button class="btn btn-secondary" style="padding:5px 12px; font-size:12px;" onclick="orderDirectly(this.dataset.dishId, this.dataset.dishName)" data-dish-id="${escapeHtml(dish.id)}" data-dish-name="${escapeHtml(dish.name)}">+ Comandă la Masă</button>`
+            ? `<button class="btn btn-secondary" style="padding:5px 12px; font-size:12px;" onclick="openOrderModal(this.dataset.dishId)" data-dish-id="${escapeHtml(dish.id)}">+ Comandă la Masă</button>`
             : `<button class="btn btn-secondary" disabled style="padding:5px 12px; font-size:12px; opacity:0.5;">Stoc epuizat</button>`;
 
           card.innerHTML = `
@@ -729,12 +812,87 @@
       document.getElementById('dish-allergens-modal').classList.remove('open');
     }
 
-    async function orderDirectly(dishId, dishName) {
+    let currentOrderingDish = null;
+    let currentOrderQty = 1;
+
+    function openOrderModal(dishId) {
+      const dish = allMenuData.find(d => d.id === dishId);
+      if (!dish) return;
+
+      currentOrderingDish = dish;
+      currentOrderQty = 1;
+      document.getElementById('order-modal-title').textContent = dish.name;
+      document.getElementById('order-modal-dish-meta').textContent = `${Number(dish.price).toFixed(2).replace('.', ',')} lei ${dish.weight ? '· ⚖️ ' + dish.weight : ''}`;
+      document.getElementById('order-modal-qty').textContent = currentOrderQty;
+      document.getElementById('order-modal-table-label').textContent = `Masa ${tableNumber}`;
+
+      // Populează opțiuni extra disponibile
+      const extrasContainer = document.getElementById('order-modal-extras-list');
+      extrasContainer.innerHTML = '';
+      
+      if (!allExtrasData || allExtrasData.length === 0) {
+        document.getElementById('order-modal-extras-section').style.display = 'none';
+      } else {
+        document.getElementById('order-modal-extras-section').style.display = 'block';
+        allExtrasData.forEach(ex => {
+          const label = document.createElement('label');
+          label.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:8px 10px; background:var(--color-surface-subtle); border:1px solid var(--color-border); border-radius:var(--radius-sm); font-size:13px; cursor:pointer;';
+          label.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" value="${ex.id}" data-price="${ex.price}" onchange="updateOrderModalTotal()" style="cursor:pointer; width:16px; height:16px;">
+              <span>${escapeHtml(ex.name)}</span>
+            </div>
+            <span style="font-weight:700; color:var(--color-primary); font-size:12px;">+${Number(ex.price).toFixed(2).replace('.', ',')} lei</span>
+          `;
+          extrasContainer.appendChild(label);
+        });
+      }
+
+      updateOrderModalTotal();
+      document.getElementById('order-customize-modal').classList.add('open');
+    }
+
+    function closeOrderModal() {
+      document.getElementById('order-customize-modal').classList.remove('open');
+      currentOrderingDish = null;
+    }
+
+    function changeOrderQty(delta) {
+      currentOrderQty += delta;
+      if (currentOrderQty < 1) currentOrderQty = 1;
+      if (currentOrderQty > 50) currentOrderQty = 50;
+      document.getElementById('order-modal-qty').textContent = currentOrderQty;
+      updateOrderModalTotal();
+    }
+
+    function updateOrderModalTotal() {
+      if (!currentOrderingDish) return;
+      let extrasSum = 0;
+      document.querySelectorAll('#order-modal-extras-list input:checked').forEach(chk => {
+        extrasSum += parseFloat(chk.dataset.price || '0');
+      });
+      const total = (currentOrderingDish.price + extrasSum) * currentOrderQty;
+      document.getElementById('order-modal-total-display').textContent = `${total.toFixed(2).replace('.', ',')} lei`;
+    }
+
+    async function confirmAndPlaceOrder() {
+      if (!currentOrderingDish) return;
+      
+      const selectedExtras = [];
+      document.querySelectorAll('#order-modal-extras-list input:checked').forEach(chk => {
+        selectedExtras.push(chk.value);
+      });
+
       try {
         const payload = {
           table_number: tableNumber,
-          items: [{ dish_id: dishId, quantity: 1, extras: [] }]
+          items: [{
+            dish_id: currentOrderingDish.id,
+            quantity: currentOrderQty,
+            extras: selectedExtras
+          }]
         };
+
         const res = await fetch('/api/orders', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -742,15 +900,16 @@
         });
         const data = await res.json();
         if (data.success) {
-          showToast(`✓ Comanda pentru ${dishName} a fost trimisă la bucătărie!`, 'success');
+          closeOrderModal();
+          showToast(`✓ Comanda a fost trimisă la bucătărie pentru Masa ${tableNumber}!`, 'success');
           setTimeout(() => {
             window.location.href = `/order-status.html?masa=${tableNumber}`;
-          }, 1000);
+          }, 800);
         } else {
           showToast(`Eroare: ${data.error}`, 'error');
         }
       } catch (err) {
-        showToast('Eroare rețea la transmiterea comenzii', 'error');
+        showToast('Eroare de rețea la plasarea comenzii', 'error');
       }
     }
 

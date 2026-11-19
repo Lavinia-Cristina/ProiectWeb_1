@@ -629,6 +629,18 @@ class RestaurantDB {
   }
 
   /**
+   * Returnează istoricul încasărilor / bonurilor fiscale emise.
+   */
+  getPayments(limit = 30) {
+    return this.db.prepare(`
+      SELECT id, table_number, order_ids, payment_method, total_amount, pdf_receipt_path, paid_at
+      FROM payments
+      ORDER BY paid_at DESC
+      LIMIT ?
+    `).all(limit);
+  }
+
+  /**
    * Returnează inventarul de ingrediente pentru ecranul de Admin.
    */
   getInventory() {
