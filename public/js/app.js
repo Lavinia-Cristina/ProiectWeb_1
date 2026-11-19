@@ -3,6 +3,17 @@
  * Modul comun pentru gestionarea temei (Light/Dark) și conexiunea SSE în timp real.
  */
 
+// Utilitar de sanitizare XSS pentru inserții în DOM
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // 1. Gestiune Temă
 (function initTheme() {
   const saved = localStorage.getItem('kt-theme') || 'light';

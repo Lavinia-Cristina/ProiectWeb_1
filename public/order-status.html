@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, follow">
   <title>Stadiul Comenzii la Masă · Restaurant Kon Tiki</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -367,7 +368,9 @@
       if (ord.table_number === tableNumber) loadOrderStatus();
     });
     sseClient.on('order:status', (ev) => {
-      loadOrderStatus();
+      if (!ev || !ev.updated || ev.updated.table_number === tableNumber) {
+        loadOrderStatus();
+      }
     });
     sseClient.on('payment:done', (p) => {
       if (p.table_number === tableNumber) {

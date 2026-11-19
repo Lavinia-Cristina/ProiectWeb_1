@@ -4,6 +4,55 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Restaurant Kon Tiki — Hub Principal & Meniu Digital</title>
+  <meta name="description" content="Restaurant Kon Tiki — Specific tradițional românesc, renumit pentru ciorba de burtă, preparate calde și meniu digital cu disponibilitate în timp real pentru 12 mese.">
+  <link rel="canonical" href="https://restaurantkontiki.ro/">
+  
+  <!-- OpenGraph & Social Graph -->
+  <meta property="og:type" content="restaurant">
+  <meta property="og:title" content="Restaurant Kon Tiki — Hub & Meniu Digital">
+  <meta property="og:description" content="Meniu digital complet, comenzi rapide la masă și preparate tradiționale românești.">
+  <meta property="og:url" content="https://restaurantkontiki.ro/">
+  <meta property="og:locale" content="ro_RO">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Schema.org JSON-LD Structured Data (GEO & Search Engine Rich Results) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Restaurant Kon Tiki",
+    "legalName": "SC KON TIKI BISTRÔ SRL",
+    "description": "Restaurant tradițional românesc recunoscut pentru ciorba de burtă autentică, preparate calde și meniu digital interactiv pentru 12 mese.",
+    "servesCuisine": ["Românească", "Tradițională"],
+    "priceRange": "$$",
+    "currenciesAccepted": "RON",
+    "paymentAccepted": "Cash, Credit Card",
+    "acceptsReservations": "True",
+    "telephone": "+40269123456",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Str. Restaurantului nr. 12",
+      "addressLocality": "Sector 1",
+      "addressRegion": "București",
+      "addressCountry": "RO"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 44.4268,
+      "longitude": 26.1025
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "opens": "10:00",
+        "closes": "23:00"
+      }
+    ],
+    "hasMenu": "https://restaurantkontiki.ro/client-menu.html"
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
@@ -131,20 +180,22 @@
 </head>
 <body>
 
-  <!-- Top Bar -->
-  <nav class="top-navbar">
-    <a href="/" class="brand-title">
-      🍲 Restaurant Kon Tiki
-    </a>
-    <div class="nav-links">
-      <span id="sse-status-badge" class="badge badge-warning">○ Conectare...</span>
-      <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută modul de culoare">
-        <span id="theme-toggle-label">🌙 Temă</span>
-      </button>
-    </div>
-  </nav>
+  <!-- Header & Top Navigation -->
+  <header>
+    <nav class="top-navbar" aria-label="Bara principală de navigare">
+      <a href="/" class="brand-title">
+        🍲 Restaurant Kon Tiki
+      </a>
+      <div class="nav-links">
+        <span id="sse-status-badge" class="badge badge-warning">○ Conectare...</span>
+        <button class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Comută modul de culoare">
+          <span id="theme-toggle-label">🌙 Temă</span>
+        </button>
+      </div>
+    </nav>
+  </header>
 
-  <div class="hub-container">
+  <main class="hub-container">
 
     <!-- Hero Banner -->
     <div class="hero-banner">
@@ -285,7 +336,22 @@
 
     </div>
 
-  </div>
+  </main>
+
+  <!-- Subsol Semantic cu Date Locale de Afacere (NAP: Name, Address, Phone & Orar) -->
+  <footer style="margin-top: var(--space-2xl); padding: var(--space-xl) var(--space-md); border-top: 1px solid var(--color-border); text-align: center; color: var(--color-text-muted); font-size: 13px;">
+    <div style="font-weight: 700; color: var(--color-text); margin-bottom: 6px; font-size: 14px;">
+      SC KON TIKI BISTRÔ SRL · Restaurant Kon Tiki (12 Mese)
+    </div>
+    <div style="margin-bottom: 6px;">
+      📍 Adresă: Str. Restaurantului nr. 12, Sector 1, București &nbsp;|&nbsp; 
+      📞 Rezervări telefonice mese: <a href="tel:+40269123456" style="color: var(--color-primary); font-weight: 700; text-decoration: underline;">0269.123.456</a> &nbsp;|&nbsp; 
+      🕒 Program: Luni – Duminică 10:00 – 23:00
+    </div>
+    <div style="font-size: 12px; color: var(--color-text-muted);">
+      Meniu complet digital cu 93 de preparate tradiționale, gramaje oficiale și lista completă a celor 15 grupe de alergeni conform Directivei CE 2000-13 și H.G. 751/2008.
+    </div>
+  </footer>
 
   <script src="/js/app.js"></script>
   <script>

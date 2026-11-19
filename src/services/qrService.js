@@ -6,6 +6,10 @@
 
 const QRCode = require('qrcode');
 
+// Cache în memorie pentru codurile QR generate (reduce încărcarea pe procesor)
+const qrDataUrlCache = new Map();
+const qrBufferCache = new Map();
+
 class QRService {
   /**
    * Generează URL-ul țintă pentru meniul digital al unei mese.
@@ -26,7 +30,12 @@ class QRService {
    */
   static async generateTableQRDataURL(tableNumber, baseUrl = '') {
     const url = this.getTableMenuUrl(tableNumber, baseUrl);
-    return await QRCode.toDataURL(url, {
+    const cacheKey = `dataurl:${url}`;
+    if (qrDataUrlCache.has(cacheKey)) {
+      return qrDataUrlCache.get(cacheKey);
+    }
+
+    const dataUrl = await QRCode.toDataURL(url, {
       errorCorrectionLevel: 'M',
       margin: 2,
       width: 280,
@@ -35,6 +44,8 @@ class QRService {
         light: '#ffffff'
       }
     });
+    qrDataUrlCache.set(cacheKey, dataUrl);
+    return dataUrl;
   }
 
   /**
@@ -45,12 +56,19 @@ class QRService {
    */
   static async generateTableQRBuffer(tableNumber, baseUrl = '') {
     const url = this.getTableMenuUrl(tableNumber, baseUrl);
-    return await QRCode.toBuffer(url, {
+    const cacheKey = `buffer:${url}`;
+    if (qrBufferCache.has(cacheKey)) {
+      return qrBufferCache.get(cacheKey);
+    }
+
+    const buffer = await QRCode.toBuffer(url, {
       type: 'png',
       errorCorrectionLevel: 'M',
       margin: 2,
       width: 320
     });
+    qrBufferCache.set(cacheKey, buffer);
+    return buffer;
   }
 
   /**
@@ -59,17 +77,19 @@ class QRService {
    * @returns {Promise<Array<{ table_number: number, url: string, qr_data_url: string }>>}
    */
   static async generateAllTablesQR(baseUrl = '') {
-    const list = [];
+    const tasks = [];
     for (let i = 1; i <= 12; i++) {
-      const url = this.getTableMenuUrl(i, baseUrl);
-      const qr_data_url = await this.generateTableQRDataURL(i, baseUrl);
-      list.push({
-        table_number: i,
-        url,
-        qr_data_url
-      });
+      tasks.push((async (tableNum) => {
+        const url = this.getTableMenuUrl(tableNum, baseUrl);
+        const qr_data_url = await this.generateTableQRDataURL(tableNum, baseUrl);
+        return {
+          table_number: tableNum,
+          url,
+          qr_data_url
+        };
+      })(i));
     }
-    return list;
+    return Promise.all(tasks);
   }
 }
 

@@ -22,6 +22,7 @@ const sseHub = require('./realtime/sse');
 const QRService = require('./services/qrService');
 const PDFService = require('./services/pdfService');
 const AllergenService = require('./services/allergenService');
+const compression = require('compression');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -30,23 +31,33 @@ const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../data/restaurant.
 // Inițializare bază de date
 const db = new RestaurantDB(DB_PATH);
 
+// Helper autoritar pentru determinarea domeniului de bază (protecție împotriva Host Header Injection)
+function getBaseUrl(req) {
+  if (process.env.BASE_URL) return process.env.BASE_URL;
+  const host = req.get('host') || `localhost:${PORT}`;
+  return `${req.protocol}://${host}`;
+}
+
+// Compresie HTTP pentru răspunsuri rapide pe mobil / Wi-Fi
+app.use(compression());
+
 // Middleware parsare JSON și formulare
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Folder static pentru fișiere publice
+// Folder static pentru fișiere publice cu politică de cache
 const publicDir = path.join(__dirname, '../public');
 if (!fs.existsSync(publicDir)) {
   fs.mkdirSync(publicDir, { recursive: true });
 }
-app.use(express.static(publicDir));
+app.use(express.static(publicDir, { maxAge: '1h' }));
 
 // Servire fișiere bonuri PDF generate
 const receiptsDir = path.join(__dirname, '../data/receipts');
 if (!fs.existsSync(receiptsDir)) {
   fs.mkdirSync(receiptsDir, { recursive: true });
 }
-app.use('/receipts', express.static(receiptsDir));
+app.use('/receipts', express.static(receiptsDir, { maxAge: '1d' }));
 
 // ==========================================
 // 1. RUTE SSE (SERVER-SENT EVENTS - D-002)
@@ -70,6 +81,9 @@ app.get('/api/tables', (req, res) => {
 app.post('/api/tables/:table_number/status', (req, res) => {
   try {
     const tableNumber = Number(req.params.table_number);
+    if (!Number.isInteger(tableNumber) || tableNumber < 1 || tableNumber > 12) {
+      return res.status(400).json({ success: false, error: 'Număr masă invalid: trebuie să fie între 1 și 12.' });
+    }
     const { status } = req.body;
     const updated = db.updateTableStatus(tableNumber, status);
 
@@ -181,6 +195,9 @@ app.post('/api/orders/:id/status', (req, res) => {
   try {
     const orderId = req.params.id;
     const { status } = req.body;
+    if (status === 'achitată') {
+      return res.status(400).json({ success: false, error: "Starea 'achitată' poate fi stabilită doar prin încasarea la casă (/api/payments)." });
+    }
     const updated = db.updateOrderStatus(orderId, status);
 
     // Emisie SSE stare actualizată
@@ -199,6 +216,9 @@ app.post('/api/payments', async (req, res) => {
   try {
     const { table_number, payment_method } = req.body;
     const tableNum = Number(table_number);
+    if (!Number.isInteger(tableNum) || tableNum < 1 || tableNum > 12) {
+      return res.status(400).json({ success: false, error: 'Număr masă invalid: trebuie să fie între 1 și 12.' });
+    }
 
     // 1. Obținere comenzi active pentru masă înainte de închidere
     const activeOrders = db.getTableActiveOrders(tableNum);
@@ -238,9 +258,13 @@ app.post('/api/payments', async (req, res) => {
   }
 });
 
-// Descărcare directă bon fiscal PDF
+// Descărcare directă bon fiscal PDF cu protecție sanitară strictă (anti-Path Traversal)
 app.get('/api/receipts/:fileName', (req, res) => {
-  const filePath = path.join(receiptsDir, req.params.fileName);
+  const cleanName = path.basename(req.params.fileName);
+  if (!/^bon_pay-\d+-\d+\.pdf$/.test(cleanName)) {
+    return res.status(400).send('Nume fișier invalid.');
+  }
+  const filePath = path.join(receiptsDir, cleanName);
   if (!fs.existsSync(filePath)) {
     return res.status(404).send('Bonul fiscal PDF nu a fost găsit.');
   }
@@ -253,8 +277,12 @@ app.get('/api/receipts/:fileName', (req, res) => {
 app.get('/api/qr/:table_number', async (req, res) => {
   try {
     const tableNumber = Number(req.params.table_number);
-    const hostUrl = `${req.protocol}://${req.get('host')}`;
+    if (!Number.isInteger(tableNumber) || tableNumber < 1 || tableNumber > 12) {
+      return res.status(400).json({ success: false, error: 'Număr masă invalid: 1-12' });
+    }
+    const hostUrl = getBaseUrl(req);
     const qrDataUrl = await QRService.generateTableQRDataURL(tableNumber, hostUrl);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
     res.json({ success: true, table_number: tableNumber, qr_data_url: qrDataUrl });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -264,9 +292,13 @@ app.get('/api/qr/:table_number', async (req, res) => {
 app.get('/api/qr/:table_number/image.png', async (req, res) => {
   try {
     const tableNumber = Number(req.params.table_number);
-    const hostUrl = `${req.protocol}://${req.get('host')}`;
+    if (!Number.isInteger(tableNumber) || tableNumber < 1 || tableNumber > 12) {
+      return res.status(400).send('Număr masă invalid: 1-12');
+    }
+    const hostUrl = getBaseUrl(req);
     const buffer = await QRService.generateTableQRBuffer(tableNumber, hostUrl);
     res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
     res.send(buffer);
   } catch (err) {
     res.status(500).send('Eroare generare QR');
@@ -275,8 +307,9 @@ app.get('/api/qr/:table_number/image.png', async (req, res) => {
 
 app.get('/api/qr-all', async (req, res) => {
   try {
-    const hostUrl = `${req.protocol}://${req.get('host')}`;
+    const hostUrl = getBaseUrl(req);
     const qrList = await QRService.generateAllTablesQR(hostUrl);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
     res.json({ success: true, qr_codes: qrList });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });

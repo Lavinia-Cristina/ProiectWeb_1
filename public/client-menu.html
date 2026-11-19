@@ -4,6 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meniu Digital Complet · Restaurant Kon Tiki</title>
+  <meta name="description" content="Meniul complet al Restaurantului Kon Tiki: 93 de preparate tradiționale cu prețuri oficiale în lei, gramaje și cele 15 grupe de alergeni conform Directivei CE 2000-13 / H.G. 751/2008.">
+  <link rel="canonical" href="https://restaurantkontiki.ro/client-menu.html">
+
+  <!-- OpenGraph / Social Graph -->
+  <meta property="og:type" content="restaurant.menu">
+  <meta property="og:title" content="Meniu Digital Complet · Restaurant Kon Tiki">
+  <meta property="og:description" content="Descoperă ciorbele tradiționale, preparatele la grătar și deserturile Kon Tiki. Disponibilitate live din stoc pentru 12 mese.">
+  <meta property="og:url" content="https://restaurantkontiki.ro/client-menu.html">
+  <meta property="og:locale" content="ro_RO">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Schema.org JSON-LD: Restaurant & Menu Structured Data (pentru motoare de căutare & AI Overviews) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Menu",
+    "name": "Meniu Oficial Restaurant Kon Tiki",
+    "description": "Meniu complet cu 93 preparate, gramaje, prețuri în lei și lista celor 15 grupe de alergeni.",
+    "inLanguage": "ro",
+    "mainEntityOfPage": "https://restaurantkontiki.ro/client-menu.html",
+    "hasMenuSection": [
+      {
+        "@type": "MenuSection",
+        "name": "Ciorbe",
+        "description": "Ciorbă de burtă renumită, ciorbă de văcuță, ciorbă de fasole și pui."
+      },
+      {
+        "@type": "MenuSection",
+        "name": "Preparate Calde & Grătar",
+        "description": "Preparate tradiționale din carne de pui, vită, porc și pește proaspăt."
+      },
+      {
+        "@type": "MenuSection",
+        "name": "Garnituri & Salate",
+        "description": "Cartofi prăjiți, piure, mămăligă, salate proaspete și murături asortate."
+      },
+      {
+        "@type": "MenuSection",
+        "name": "Deserturi & Băuturi",
+        "description": "Papanași tradiționali, clătite, băuturi răcoritoare și cafea."
+      }
+    ]
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;600;700&display=swap" rel="stylesheet">
@@ -360,11 +405,11 @@
 
       <!-- Buton Ghid Alergeni & Căutare Preparate -->
       <div class="utility-bar">
-        <button class="allergens-btn" onclick="openAllergensGuideModal()">
+        <button class="allergens-btn" onclick="openAllergensGuideModal()" aria-label="Deschide lista oficială a celor 15 grupe de alergeni">
           <span>📋</span>
           <span>Lista Alergeni (CE 2000-13 / H.G. 751)</span>
         </button>
-        <input type="text" class="search-input" id="search-input" placeholder="Caută preparat (ex. Ciorbă, Șnițel, Ceafă...)" oninput="filterMenu()">
+        <input type="text" class="search-input" id="search-input" placeholder="Caută preparat (ex. Ciorbă, Șnițel, Ceafă...)" aria-label="Căutare preparate în meniu" oninput="filterMenu()">
       </div>
     </header>
 
@@ -379,6 +424,23 @@
         Se încarcă meniul complet Kon Tiki și lista oficială de alergeni...
       </div>
     </main>
+
+    <!-- Crawler & AI Assistant Accessible Allergens Information (GEO: Generative Engine Optimization) -->
+    <section class="seo-allergens-section" style="padding: var(--space-md); border-top: 1px solid var(--color-border); font-size: 12px; color: var(--color-text-muted);">
+      <details>
+        <summary style="cursor: pointer; font-weight: 700; color: var(--color-text);">
+          ℹ️ Ghid Oficial Alergeni Alimentari — Directiva CE 2000-13 & H.G. 751/2008
+        </summary>
+        <div style="margin-top: 8px; line-height: 1.6;">
+          Restaurant Kon Tiki declară cele 15 grupe de alergeni:
+          <strong>1. Gluten</strong>, <strong>2. Crustacee</strong>, <strong>3. Ouă</strong>, <strong>4. Pește</strong>, 
+          <strong>5. Arahide</strong>, <strong>6. Soia</strong>, <strong>7. Lapte / Lactoză</strong>, 
+          <strong>8. Fructe cu coajă</strong>, <strong>9. Țelină</strong>, <strong>10. Muștar</strong>, 
+          <strong>11. Susan</strong>, <strong>12. Sulfiți</strong>, <strong>13. Lupin</strong>, 
+          <strong>14. Moluște</strong>, <strong>15. Produse decongelate</strong>.
+        </div>
+      </details>
+    </section>
 
     <!-- Footer Bar -->
     <footer class="order-status-bar">
@@ -395,18 +457,18 @@
   </div>
 
   <!-- Modal 1: Ghidul Complet al celor 15 Alergeni Oficiali -->
-  <div class="modal-overlay" id="allergens-guide-modal">
+  <div class="modal-overlay" id="allergens-guide-modal" role="dialog" aria-modal="true" aria-labelledby="allergens-guide-title">
     <div class="modal-box">
       <div class="modal-header">
         <div>
-          <h2 style="font-family:var(--font-heading); font-size:16px; color:var(--color-primary); margin:0;">
+          <h2 id="allergens-guide-title" style="font-family:var(--font-heading); font-size:16px; color:var(--color-primary); margin:0;">
             Lista Alergenilor Alimentari
           </h2>
           <div style="font-size:11px; color:var(--color-text-muted);">
             Conform Directivei CE 2000-13 și H.G. 751/2008 (Restaurant Kon Tiki)
           </div>
         </div>
-        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="closeAllergensGuideModal()">✕</button>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="closeAllergensGuideModal()" aria-label="Închide ghidul alergenilor">✕</button>
       </div>
       <div class="modal-body" id="allergens-list-container">
         <!-- Populat dinamic din /api/allergens -->
@@ -418,7 +480,7 @@
   </div>
 
   <!-- Modal 2: Detalii Alergeni per Preparat Specific -->
-  <div class="modal-overlay" id="dish-allergens-modal">
+  <div class="modal-overlay" id="dish-allergens-modal" role="dialog" aria-modal="true" aria-labelledby="modal-dish-title">
     <div class="modal-box">
       <div class="modal-header">
         <div>
@@ -427,7 +489,7 @@
           </h2>
           <div id="modal-dish-weight" style="font-size:11px; color:var(--color-text-muted);"></div>
         </div>
-        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="closeDishAllergensModal()">✕</button>
+        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="closeDishAllergensModal()" aria-label="Închide fereastra alergenilor preparatului">✕</button>
       </div>
       <div class="modal-body" id="dish-allergens-details">
         <!-- Populat dinamic -->
@@ -539,7 +601,7 @@
       }
 
       for (const [categoryName, items] of Object.entries(grouped)) {
-        const sectionTitle = document.createElement('div');
+        const sectionTitle = document.createElement('h2');
         sectionTitle.className = 'category-section-title';
         sectionTitle.textContent = `${categoryName} (${items.length})`;
         container.appendChild(sectionTitle);
@@ -549,7 +611,7 @@
           card.className = `dish-card ${dish.is_available ? 'available' : 'unavailable'}`;
 
           const priceStr = Number(dish.price).toFixed(2).replace('.', ',') + ' lei';
-          const weightDisplay = dish.weight ? `⚖️ ${dish.weight}` : '';
+          const weightDisplay = dish.weight ? `⚖️ ${escapeHtml(dish.weight)}` : '';
 
           // Alergeni chips
           let allergensChipsHtml = '';
@@ -557,13 +619,15 @@
           if (allergenIds.length > 0) {
             const chips = allergenIds.map(id => {
               const info = allergensGuide.find(a => a.id === id);
-              return `<span class="allergen-chip" title="${info ? info.name : id}">${id}. ${info ? info.shortName : id}</span>`;
+              const label = info ? `${id}. ${info.shortName}` : `${id}`;
+              const fullName = info ? info.name : id;
+              return `<span class="allergen-chip" title="${escapeHtml(fullName)}">${escapeHtml(label)}</span>`;
             }).join('');
             allergensChipsHtml = `
               <div class="dish-allergens-row">
                 <span style="font-size:11px; font-weight:700; color:var(--color-text-muted);">Alergeni:</span>
                 ${chips}
-                <button class="allergen-inspect-btn" onclick="openDishAllergensModal('${dish.id}')">vezi detalii</button>
+                <button class="allergen-inspect-btn" onclick="openDishAllergensModal(this.dataset.dishId)" data-dish-id="${escapeHtml(dish.id)}">vezi detalii</button>
               </div>
             `;
           } else {
@@ -579,17 +643,17 @@
             : `<span class="stock-tag out"><span>✕</span> Indisponibil momentan</span>`;
 
           const actionBtn = dish.is_available
-            ? `<button class="btn btn-secondary" style="padding:5px 12px; font-size:12px;" onclick="orderDirectly('${dish.id}', '${dish.name}')">+ Comandă la Masă</button>`
+            ? `<button class="btn btn-secondary" style="padding:5px 12px; font-size:12px;" onclick="orderDirectly(this.dataset.dishId, this.dataset.dishName)" data-dish-id="${escapeHtml(dish.id)}" data-dish-name="${escapeHtml(dish.name)}">+ Comandă la Masă</button>`
             : `<button class="btn btn-secondary" disabled style="padding:5px 12px; font-size:12px; opacity:0.5;">Stoc epuizat</button>`;
 
           card.innerHTML = `
             <div class="dish-header">
               <div class="dish-title-group">
-                <div class="dish-name">${dish.name}</div>
+                <h3 class="dish-name">${escapeHtml(dish.name)}</h3>
                 ${weightDisplay ? `<div class="dish-weight-badge">${weightDisplay}</div>` : ''}
               </div>
               <div class="dish-price-box">
-                <div class="dish-price">${priceStr}</div>
+                <div class="dish-price">${escapeHtml(priceStr)}</div>
               </div>
             </div>
 
@@ -692,10 +756,16 @@
 
     initClientMenu();
 
-    // Actualizare live via SSE
-    sseClient.on('stock:update', () => loadMenu());
-    sseClient.on('order:new', () => loadMenu());
-    sseClient.on('system:reset', () => loadMenu());
+    // Actualizare live via SSE cu debounce pentru a preveni jank la navigare
+    let menuReloadTimer = null;
+    function debouncedLoadMenu() {
+      if (menuReloadTimer) clearTimeout(menuReloadTimer);
+      menuReloadTimer = setTimeout(() => loadMenu(), 300);
+    }
+
+    sseClient.on('stock:update', debouncedLoadMenu);
+    sseClient.on('order:new', debouncedLoadMenu);
+    sseClient.on('system:reset', debouncedLoadMenu);
   </script>
 </body>
 </html>

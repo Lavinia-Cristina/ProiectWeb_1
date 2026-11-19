@@ -23,6 +23,14 @@ class RealtimeSSE {
    * @param {import('express').Response} res
    */
   handleConnection(req, res) {
+    if (req.socket) {
+      req.socket.setTimeout(0);
+      req.socket.setKeepAlive(true);
+      if (typeof req.socket.setNoDelay === 'function') {
+        req.socket.setNoDelay(true);
+      }
+    }
+
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache, no-transform',
@@ -30,13 +38,22 @@ class RealtimeSSE {
       'X-Accel-Buffering': 'no'
     });
 
+    if (typeof res.flushHeaders === 'function') {
+      res.flushHeaders();
+    }
+
+    res.write('retry: 3000\n\n');
     res.write('event: connected\ndata: ' + JSON.stringify({ message: 'SSE conectat la Restaurant Kon Tiki', time: Date.now() }) + '\n\n');
 
     this.clients.add(res);
 
-    req.on('close', () => {
+    const cleanup = () => {
       this.clients.delete(res);
-    });
+    };
+
+    req.on('close', cleanup);
+    res.on('close', cleanup);
+    res.on('error', cleanup);
   }
 
   /**
@@ -44,8 +61,14 @@ class RealtimeSSE {
    */
   sendHeartbeat() {
     for (const client of this.clients) {
+      if (client.destroyed || client.writableEnded) {
+        this.clients.delete(client);
+        continue;
+      }
       try {
-        client.write(': heartbeat\n\n');
+        client.write(': heartbeat\n\n', (err) => {
+          if (err) this.clients.delete(client);
+        });
       } catch {
         this.clients.delete(client);
       }
@@ -60,8 +83,14 @@ class RealtimeSSE {
   broadcast(eventType, payload) {
     const message = `event: ${eventType}\ndata: ${JSON.stringify(payload)}\n\n`;
     for (const client of this.clients) {
+      if (client.destroyed || client.writableEnded) {
+        this.clients.delete(client);
+        continue;
+      }
       try {
-        client.write(message);
+        client.write(message, (err) => {
+          if (err) this.clients.delete(client);
+        });
       } catch {
         this.clients.delete(client);
       }

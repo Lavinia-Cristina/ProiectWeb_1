@@ -25,6 +25,8 @@ class RestaurantDB {
 
   init() {
     this.db.exec(`
+      PRAGMA journal_mode = WAL;
+      PRAGMA synchronous = NORMAL;
       PRAGMA foreign_keys = ON;
 
       -- 1. Mesele 1-12
@@ -114,6 +116,11 @@ class RestaurantDB {
         pdf_receipt_path TEXT,
         paid_at INTEGER NOT NULL
       );
+
+      -- Indexuri de performanță pentru căutare rapidă (O(1))
+      CREATE INDEX IF NOT EXISTS idx_orders_table_status ON orders(table_number, status);
+      CREATE INDEX IF NOT EXISTS idx_orders_status_placed ON orders(status, placed_at);
+      CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);
     `);
 
     try {
@@ -183,11 +190,11 @@ class RestaurantDB {
    * @returns {object} Comanda confirmată
    */
   placeOrderAtomic({ table_number, items, client_supplied_price }) {
-    if (!table_number || table_number < 1 || table_number > 12) {
-      throw new Error(`Număr masă invalid: ${table_number}. Localul are exact 12 mese.`);
+    if (!Number.isInteger(table_number) || table_number < 1 || table_number > 12) {
+      throw new Error(`Număr masă invalid: ${table_number}. Localul are exact mesele 1 - 12.`);
     }
-    if (!items || items.length === 0) {
-      throw new Error('Comanda trebuie să conțină cel puțin un preparat.');
+    if (!Array.isArray(items) || items.length === 0) {
+      throw new Error('Comanda trebuie să conțină o listă validă de preparate.');
     }
 
     // Începem tranzacția exclusivă (lock de scriere imediat)
@@ -205,12 +212,20 @@ class RestaurantDB {
       const processedItems = [];
 
       for (const item of items) {
+        if (!item || typeof item.dish_id !== 'string') {
+          throw new Error('Format articol invalid în comandă.');
+        }
+
+        const qty = item.quantity === undefined ? 1 : item.quantity;
+        if (!Number.isInteger(qty) || qty < 1 || qty > 50) {
+          throw new Error(`Cantitate invalidă pentru preparatul ${item.dish_id}: trebuie să fie un întreg între 1 și 50.`);
+        }
+
         const dish = getDish.get(item.dish_id);
         if (!dish) {
           throw new Error(`Preparatul cu ID-ul ${item.dish_id} nu există.`);
         }
 
-        const qty = item.quantity || 1;
         let itemTotal = dish.price * qty;
 
         // Adăugare ingrediente rețetă de bază
@@ -221,7 +236,15 @@ class RestaurantDB {
 
         // Adăugare ingrediente și cost extra-uri
         const itemExtras = [];
-        if (item.extras && Array.isArray(item.extras)) {
+        if (item.extras) {
+          if (!Array.isArray(item.extras)) {
+            throw new Error(`Opțiunile extra pentru ${item.dish_id} trebuie să fie o listă.`);
+          }
+          const uniqueExtras = new Set(item.extras);
+          if (uniqueExtras.size !== item.extras.length) {
+            throw new Error(`Opțiunile extra duplicate nu sunt permise pentru ${item.dish_id}.`);
+          }
+
           for (const extraId of item.extras) {
             const extra = getExtra.get(extraId);
             if (!extra) {
@@ -428,24 +451,35 @@ class RestaurantDB {
 
     sql += ' ORDER BY placed_at ASC';
     const orders = this.db.prepare(sql).all(...params);
+    if (orders.length === 0) return [];
 
-    const getItems = this.db.prepare(`
-      SELECT oi.id, oi.dish_id, oi.quantity, oi.selected_extras, oi.item_price, d.name AS dish_name
+    // Încărcare dintr-o singură interogare agregată (evitare N+1)
+    const orderIds = orders.map(o => o.id);
+    const placeholders = orderIds.map(() => '?').join(',');
+    const allItems = this.db.prepare(`
+      SELECT oi.id, oi.order_id, oi.dish_id, oi.quantity, oi.selected_extras, oi.item_price, d.name AS dish_name
       FROM order_items oi
       JOIN dishes d ON d.id = oi.dish_id
-      WHERE oi.order_id = ?
-    `);
+      WHERE oi.order_id IN (${placeholders})
+    `).all(...orderIds);
 
-    return orders.map(ord => {
-      const items = getItems.all(ord.id).map(it => ({
-        ...it,
+    const itemsByOrderId = {};
+    for (const it of allItems) {
+      if (!itemsByOrderId[it.order_id]) itemsByOrderId[it.order_id] = [];
+      itemsByOrderId[it.order_id].push({
+        id: it.id,
+        dish_id: it.dish_id,
+        dish_name: it.dish_name,
+        quantity: it.quantity,
+        item_price: it.item_price,
         extras: JSON.parse(it.selected_extras || '[]')
-      }));
-      return {
-        ...ord,
-        items
-      };
-    });
+      });
+    }
+
+    return orders.map(ord => ({
+      ...ord,
+      items: itemsByOrderId[ord.id] || []
+    }));
   }
 
   /**
@@ -475,6 +509,14 @@ class RestaurantDB {
     const valid = ['plasată', 'în preparare', 'gata', 'servită', 'achitată'];
     if (!valid.includes(newStatus)) {
       throw new Error(`Stare comandă invalidă: ${newStatus}. Valori permise: ${valid.join(', ')}`);
+    }
+
+    const current = this.db.prepare('SELECT id, status FROM orders WHERE id = ?').get(orderId);
+    if (!current) {
+      throw new Error(`Comanda cu ID-ul ${orderId} nu a fost găsită.`);
+    }
+    if (current.status === 'achitată') {
+      throw new Error(`Comanda ${orderId} este deja achitată și nu mai poate fi modificată.`);
     }
 
     const now = Date.now();
@@ -602,8 +644,8 @@ class RestaurantDB {
    */
   restockIngredient(ingredientId, addQuantity) {
     const qty = Number(addQuantity);
-    if (isNaN(qty) || qty <= 0) {
-      throw new Error(`Cantitate invalidă de aprovizionare: ${addQuantity}`);
+    if (!Number.isInteger(qty) || qty <= 0 || qty > 10000) {
+      throw new Error(`Cantitate invalidă de aprovizionare: ${addQuantity}. Trebuie să fie un număr întreg pozitiv între 1 și 10000.`);
     }
 
     const res = this.db.prepare(`
